@@ -1,0 +1,32 @@
+openapi: 3.0.0
+info:
+  title: Basic Calculator
+  description: An exercise server, that does basic arithmetic operations.
+  version: 0.0.1
+paths:
+  /v1/ressources/calculator/add:
+    post:
+      summary: Calculates and returns the sum of two numbers and returns it.
+      requestBody:
+        description: The numbers x and y, that are supposed to be summed up.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                x:
+                  type: number
+                y:
+                  type: number
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Summe:
+                    type: number
+                    description: Sum of the two numbers x and y.

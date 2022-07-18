@@ -1,0 +1,20 @@
+{
+  "clientSystemId": "XNSG_TEST",
+  "clientIdentCode": "APITEST",
+  "userName": "API_TEST",
+  "resultLanguageIsoCodes": [
+    "en",
+    "de"
+  ],
+  "declarationTypeCode": "string",
+  "customsProcess": {
+    "customsProcess": "EXPORT_BROKER",
+    "countrySetupIdentCode": "CN"
+  },
+  "businessObjectIds": [
+    "string"
+  ],
+  "scenarios": [
+    "string"
+  ]
+}

@@ -1,0 +1,2836 @@
+---
+openapi: "3.0.0"
+servers:
+- url: "https://api-qas.gls-group.net/"
+  description: "qas environment "
+- url: "https://api.gls-group.net/"
+  description: "production environment"
+- url: "https://api-qas.gls-group.net/"
+  description: "qas environment "
+info:
+  version: "1.0.0"
+  title: "AEB Customs ICI Adapter API"
+  description: "This API serves as an adapter to the AEB ICI API."
+paths:
+  /createConsignment:
+    post:
+      tags:
+      - "Create Consignment"
+      summary: "Create a new consignement"
+      description: "Creates a new consignment. If any fields on consignment or delivery\
+        \ level are empty which are mandatory an error message will be created and\
+        \ the creation stopped. Only if the mandatory fields are filled the consignment\
+        \ will be created and imported."
+      operationId: "createConsignment"
+      security:
+      - OauthSandbox: []
+      - OauthQAS: []
+      responses:
+        "401":
+          description: "Unauthorized"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponseBody"
+        "403":
+          description: "Forbidden"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponseBody"
+        "404":
+          description: "Not Found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponseBody"
+        "405":
+          description: "Method Not Allowed"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponseBody"
+        "415":
+          description: "Unsupported Media Type"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponseBody"
+        default:
+          description: "The created consignment"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ICCreateConsignmentResponseDTO"
+      requestBody:
+        description: "The consignment data"
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ICCreateConsignmentRequestDTO"
+            examples:
+              Typical ERP example:
+                description: "Example with fields which are typically availabe in\
+                  \ an ERP system."
+                value:
+                  clientSystemId: "ERP-ID"
+                  clientIdentCode: "APITEST"
+                  resultLanguageIsoCodes:
+                  - "en"
+                  consignment:
+                    consignmentIdClientSystem: "CONS-1000-ID"
+                    organizationUnitClientSystem: "OrgUnit"
+                    consignmentNumber: "CONS-1000"
+                    remark: "Remark"
+                    profileCode: "STD"
+                    personInCharge:
+                      forename: "Forename"
+                      surname: "Surename1"
+                      email: "email@company.com"
+                      phone: "Phone"
+                      supplement: "Supplement"
+                      initials: "Initials"
+                    deliveries:
+                    - deliveryIdClientSystem: "DEL-1000-ID"
+                      organizationUnitClientSystem: "OrgUnit"
+                      deliveryNumber: "DEL-1000"
+                      remark: "Remark"
+                      totalGrossMass:
+                        value: "150"
+                        unit: "kg"
+                      totalNetMass:
+                        value: "120"
+                        unit: "kg"
+                      dispatchCountryCode: "NL"
+                      destinationCountryCode: "US"
+                      decisiveDate:
+                        dateInTimezone: "2020-05-05 12:00:00"
+                        timezone: "GMT+01:00"
+                      tradeTerms:
+                        incotermCode: "EXW"
+                        place: "Place"
+                        info: "Info"
+                      isContainerised: "true"
+                      parties:
+                      - partyType: "DECLARANT"
+                        customsProcess: "EXPORT_NL"
+                        companyNumber: "DECL-1000"
+                        name: "Declarant NL"
+                        name2: "Name2"
+                        street: "Street"
+                        street2: "Street 2"
+                        city: "City"
+                        postCode: "123456"
+                        district: "District"
+                        country: "NL"
+                        contact:
+                          forename: "Forname"
+                          surname: "Surname"
+                          email: "email@declarant.com"
+                          phone: "Phone"
+                          supplement: "Supplement"
+                          initials: "Initials"
+                        customsIds:
+                        - identificationType: "EORI"
+                          identification: "NL123456789"
+                      - partyType: "EXPORTER"
+                        customsProcess: "EXPORT_NL"
+                        companyNumber: "DECL-1000"
+                        name: "Declarant NL"
+                        name2: "Name2"
+                        street: "Street"
+                        street2: "Street 2"
+                        city: "City"
+                        postCode: "123456"
+                        district: "District"
+                        country: "NL"
+                        customsIds:
+                        - identificationType: "EORI"
+                          identification: "NL123456789"
+                      - partyType: "CONSIGNEE"
+                        name: "Consignee US"
+                        street: "Street"
+                        city: "City"
+                        postCode: "123456"
+                        country: "US"
+                      transportEquipments:
+                      - equipmentType: "CONTAINER"
+                        identification: "CON-1000"
+                        seals:
+                        - identification: "SEAL-1000"
+                      customsOffices:
+                      - officeType: "EXPORT"
+                        sequenceNumber: "1"
+                        officeCode: "NL000074"
+                      transportMeans:
+                      - meansType: "BORDER"
+                        transportModeCode: "3"
+                        transportMeansCode: "20"
+                        identification: "Identification"
+                        nationalityCode: "NL"
+                      itinerary:
+                      - sequenceNumber: "1"
+                        countryCode: "BE"
+                      invoices:
+                      - invoiceIdClientSystem: "INV-1000-ID"
+                        invoiceNumber: "INV-1000"
+                        invoiceDate:
+                          dateInTimezone: "2020-05-05 12:00:00"
+                          timezone: "GMT+01:00"
+                        invoicePrice:
+                          value: "500"
+                          currencyIso: "USD"
+                      items:
+                      - itemIdClientSystem: "1"
+                        itemNumber: "1"
+                        materialNumber: "M-1000"
+                        invoiceIdClientSystem: "INV-1000-ID"
+                        grossMass:
+                          value: "150"
+                          unit: "kg"
+                        netMass:
+                          value: "120"
+                          unit: "kg"
+                        netPrice:
+                          value: "500"
+                          currencyIso: "USD"
+                        originCountryCode: "NL"
+                        preferentialOriginCountryCode: "NL"
+                        isEligiblePreference: "false"
+                        statisticalValue:
+                          value: "400"
+                          currencyIso: "EUR"
+                        classifications:
+                        - classificationType: "COCOEXPORT"
+                          classificationValue: "87120030"
+                        goodsDescription:
+                        - languageISOCode: "EN"
+                          text: "Bicycles and accessories"
+                        quantities:
+                        - quantityType: "ITEM"
+                          quantity:
+                            value: "10"
+                            unit: "St"
+                        additionalReferences:
+                        - referenceType: "EMCS_ARC_NUMBER"
+                          reference: "Reference number"
+                        customsProcedures:
+                        - customsProcedureType: "EXPORTPROC"
+                          customsProcedureCode: "1000"
+                      packages:
+                      - packageIdClientSystem: "PACK-1000-ID"
+                        quantity: "1"
+                        typeUneceCode: "PB"
+                        grossMass:
+                          value: "150"
+                          unit: "kg"
+                        marksAndNumbers:
+                          languageISOCode: "EN"
+                          text: "Marks"
+                        seals:
+                        - identification: "SEAL-1000"
+                        packedItems:
+                        - itemIdClientSystem: "1"
+                          packedQuantity: "10"
+                      goodsDescription:
+                      - languageISOCode: "EN"
+                        text: "Bicycles"
+                      additionalReferences:
+                      - referenceType: "EMCS_ARC_NUMBER"
+                        reference: "Reference number"
+              Country specific example:
+                description: "Example with country specific fields which need to be\
+                  \ passed as extension."
+                value:
+                  clientSystemId: "ERP-ID"
+                  clientIdentCode: "APITEST"
+                  resultLanguageIsoCodes:
+                  - "en"
+                  consignment:
+                    consignmentIdClientSystem: "CONS-1000-ID"
+                    consignmentNumber: "CONS-1000"
+                    profileCode: "STD"
+                    deliveries:
+                    - deliveryIdClientSystem: "DEL-1000-ID"
+                      deliveryNumber: "DEL-1000"
+                      dispatchCountryCode: "NL"
+                      destinationCountryCode: "US"
+                      decisiveDate:
+                        dateInTimezone: "2020-05-05 12:00:00"
+                        timezone: "CET"
+                      parties:
+                      - partyType: "CONSIGNEE"
+                        name: "Consignee US"
+                        street: "Main road 1"
+                        city: "Atlanta"
+                        postCode: "123456"
+                        country: "US"
+                      transportMeans:
+                      - meansType: "BORDER"
+                        transportModeCode: "3"
+                        transportMeansCode: "20"
+                        identification: "US 123"
+                        nationalityCode: "US"
+                      extension:
+                        exportNL:
+                          expectedArrivalTime:
+                            dateInTimezone: "2020-05-05 00:00:00"
+                            timezone: "CET"
+                          expectedDepartureTime:
+                            dateInTimezone: "2020-05-15 00:00:00"
+                            timezone: "CET"
+                      items:
+                      - itemIdClientSystem: "1"
+                        itemNumber: "1"
+                        materialNumber: "M-1000"
+                        netMass:
+                          value: "120"
+                          unit: "kg"
+                        originCountryCode: "BE"
+                        statisticalValue:
+                          value: "400"
+                          currencyIso: "EUR"
+                        classifications:
+                        - classificationType: "COCOEXPORT"
+                          classificationValue: "87120030"
+                        goodsDescription:
+                        - languageISOCode: "EN"
+                          text: "Bicycles and accessories"
+                        quantities:
+                        - quantityType: "ITEM"
+                          quantity:
+                            value: "10"
+                            unit: "St"
+                        extension:
+                          exportNL:
+                            transactionNatureCode: "11"
+                            producedDocuments:
+                            - typeCode: "Y902"
+                              reference: "Document reference Y902"
+                              informationDate:
+                                dateInTimezone: "2020-05-05 00:00:00"
+                                timezone: "CET"
+                      packages:
+                      - packageIdClientSystem: "PACK-1000-ID"
+                        quantity: "1"
+                        typeUneceCode: "PB"
+                        grossMass:
+                          value: "150"
+                          unit: "kg"
+                        marksAndNumbers:
+                          languageISOCode: "EN"
+                          text: "Marks"
+              Broker example:
+                description: "Example with broker specific fields which need to passed\
+                  \ as free defined extra fields in an extension."
+                value:
+                  clientSystemId: "ERP-ID"
+                  clientIdentCode: "APITEST"
+                  resultLanguageIsoCodes:
+                  - "en"
+                  consignment:
+                    consignmentIdClientSystem: "CONS-1000-ID"
+                    consignmentNumber: "CONS-1000"
+                    profileCode: "STD"
+                    deliveries:
+                    - deliveryIdClientSystem: "DEL-1000-ID"
+                      deliveryNumber: "DEL-1000"
+                      dispatchCountryCode: "NL"
+                      destinationCountryCode: "US"
+                      decisiveDate:
+                        dateInTimezone: "2020-05-05 12:00:00"
+                        timezone: "CET"
+                      parties:
+                      - partyType: "CONSIGNEE"
+                        name: "Consignee US"
+                        street: "Main road 1"
+                        city: "Atlanta"
+                        postCode: "123456"
+                        country: "US"
+                      transportMeans:
+                      - meansType: "BORDER"
+                        transportModeCode: "3"
+                        transportMeansCode: "20"
+                        identification: "US 123"
+                        nationalityCode: "US"
+                      extension:
+                        exportBroker:
+                          extraFields:
+                          - identCode: "FIELD_1"
+                            value: "VALUE_1"
+                          - identCode: "FIELD_2"
+                            value: "VALUE_2"
+                      items:
+                      - itemIdClientSystem: "1"
+                        itemNumber: "1"
+                        materialNumber: "M-1000"
+                        netMass:
+                          value: "120"
+                          unit: "kg"
+                        originCountryCode: "BE"
+                        statisticalValue:
+                          value: "400"
+                          currencyIso: "EUR"
+                        classifications:
+                        - classificationType: "COCOEXPORT"
+                          classificationValue: "87120030"
+                        goodsDescription:
+                        - languageISOCode: "EN"
+                          text: "Bicycles and accessories"
+                        quantities:
+                        - quantityType: "ITEM"
+                          quantity:
+                            value: "10"
+                            unit: "St"
+                        extension:
+                          exportBroker:
+                            extraFields:
+                            - identCode: "FIELD_1"
+                              value: "VALUE_1"
+                            - identCode: "FIELD_2"
+                              value: "VALUE_2"
+                            producedDocuments:
+                            - typeCode: "Y902"
+                              reference: "Document reference Y902"
+                              informationDate:
+                                dateInTimezone: "2020-05-05 00:00:00"
+                                timezone: "CET"
+                      packages:
+                      - packageIdClientSystem: "PACK-1000-ID"
+                        quantity: "1"
+                        typeUneceCode: "PB"
+                        grossMass:
+                          value: "150"
+                          unit: "kg"
+                        marksAndNumbers:
+                          languageISOCode: "EN"
+                          text: "Marks"
+              Full example:
+                description: "Example with all fields filled."
+                value:
+                  clientSystemId: "ERP-ID"
+                  clientIdentCode: "APITEST"
+                  resultLanguageIsoCodes:
+                  - "en"
+                  consignment:
+                    consignmentIdClientSystem: "CONS-1000-ID"
+                    organizationUnitClientSystem: "OrgUnit"
+                    consignmentNumber: "CONS-1000"
+                    remark: "Remark"
+                    profileCode: "STD"
+                    personInCharge:
+                      forename: "Forename"
+                      surname: "Surename1"
+                      email: "email@company.com"
+                      phone: "Phone"
+                      supplement: "Supplement"
+                      initials: "Initials"
+                    deliveries:
+                    - deliveryIdClientSystem: "DEL-1000-ID"
+                      organizationUnitClientSystem: "OrgUnit"
+                      deliveryNumber: "DEL-1000"
+                      remark: "Remark"
+                      totalGrossMass:
+                        value: "150"
+                        unit: "kg"
+                      totalNetMass:
+                        value: "120"
+                        unit: "kg"
+                      dispatchCountryCode: "NL"
+                      destinationCountryCode: "US"
+                      decisiveDate:
+                        dateInTimezone: "2020-05-05 12:00:00"
+                        timezone: "GMT+01:00"
+                      tradeTerms:
+                        incotermCode: "EXW"
+                        place: "Place"
+                        info: "Info"
+                      isContainerised: "true"
+                      parties:
+                      - partyType: "DECLARANT"
+                        customsProcess: "EXPORT_NL"
+                        companyNumber: "DECL-1000"
+                        name: "Declarant NL"
+                        name2: "Name2"
+                        street: "Street"
+                        street2: "Street 2"
+                        city: "City"
+                        postCode: "123456"
+                        district: "District"
+                        country: "NL"
+                        contact:
+                          forename: "Forname"
+                          surname: "Surname"
+                          email: "email@declarant.com"
+                          phone: "Phone"
+                          supplement: "Supplement"
+                          initials: "Initials"
+                        customsIds:
+                        - identificationType: "EORI"
+                          identification: "NL123456789"
+                      - partyType: "EXPORTER"
+                        customsProcess: "EXPORT_NL"
+                        companyNumber: "DECL-1000"
+                        name: "Declarant NL"
+                        name2: "Name2"
+                        street: "Street"
+                        street2: "Street 2"
+                        city: "City"
+                        postCode: "123456"
+                        district: "District"
+                        country: "NL"
+                        customsIds:
+                        - identificationType: "EORI"
+                          identification: "NL123456789"
+                      - partyType: "CONSIGNEE"
+                        name: "Consignee US"
+                        street: "Street"
+                        city: "City"
+                        postCode: "123456"
+                        country: "US"
+                      locations:
+                      - locationType: "LOADING_PLACE"
+                        code: "LOC-1000"
+                        name: "Location name"
+                        street: "Street"
+                        streetNumber: "number"
+                        city: "City"
+                        postCode: "123456"
+                        country: "NL"
+                        complement: "Complement"
+                      transportEquipments:
+                      - equipmentType: "CONTAINER"
+                        identification: "CON-1000"
+                        seals:
+                        - identification: "SEAL-1000"
+                      customsOffices:
+                      - officeType: "EXPORT"
+                        sequenceNumber: "1"
+                        officeCode: "NL000074"
+                      transportMeans:
+                      - meansType: "BORDER"
+                        transportModeCode: "3"
+                        transportMeansCode: "20"
+                        identification: "Identification"
+                        nationalityCode: "NL"
+                      itinerary:
+                      - sequenceNumber: "1"
+                        countryCode: "BE"
+                      invoices:
+                      - invoiceIdClientSystem: "INV-1000-ID"
+                        invoiceNumber: "INV-1000"
+                        invoiceDate:
+                          dateInTimezone: "2020-05-05 12:00:00"
+                          timezone: "GMT+01:00"
+                        invoicePrice:
+                          value: "500"
+                          currencyIso: "USD"
+                      items:
+                      - itemIdClientSystem: "1"
+                        itemNumber: "1"
+                        materialNumber: "M-1000"
+                        invoiceIdClientSystem: "INV-1000-ID"
+                        grossMass:
+                          value: "150"
+                          unit: "kg"
+                        netMass:
+                          value: "120"
+                          unit: "kg"
+                        netPrice:
+                          value: "500"
+                          currencyIso: "USD"
+                        originCountryCode: "NL"
+                        preferentialOriginCountryCode: "NL"
+                        dispatchCountryCode: "NL"
+                        destinationCountryCode: "US"
+                        isEligiblePreference: "false"
+                        statisticalValue:
+                          value: "400"
+                          currencyIso: "EUR"
+                        additionalAggregationKey: "KEY-1"
+                        additionalSplitCriteria: "CRITERIA-1"
+                        classifications:
+                        - classificationType: "COCOEXPORT"
+                          classificationValue: "87120030"
+                        goodsDescription:
+                        - languageISOCode: "EN"
+                          text: "Bicycles and accessories"
+                        parties:
+                        - partyType: "CONSIGNEE"
+                          name: "Consignee US"
+                          street: "Street"
+                          city: "City"
+                          postCode: "123456"
+                          country: "US"
+                        costs:
+                        - costType: "TRANSPORT"
+                          costTypeQualifier: "DUTY_COSTS"
+                          customsProcess: "EXPORT_BE"
+                          value:
+                            value: 50
+                            currencyIso: "USD"
+                        quantities:
+                        - quantityType: "ITEM"
+                          quantity:
+                            value: "10"
+                            unit: "St"
+                        additionalReferences:
+                        - referenceType: "EMCS_ARC_NUMBER"
+                          reference: "Reference number"
+                        customsProcedures:
+                        - customsProcedureType: "EXPORTPROC"
+                          customsProcedureCode: "1000"
+                      packages:
+                      - packageIdClientSystem: "PACK-1000-ID"
+                        quantity: "1"
+                        typeUneceCode: "PB"
+                        grossMass:
+                          value: "150"
+                          unit: "kg"
+                        marksAndNumbers:
+                          languageISOCode: "EN"
+                          text: "Marks"
+                        seals:
+                        - identification: "SEAL-1000"
+                        packedItems:
+                        - itemIdClientSystem: "1"
+                          packedQuantity: "10"
+                      goodsDescription:
+                      - languageISOCode: "EN"
+                        text: "Bicycles"
+                      additionalReferences:
+                      - referenceType: "EMCS_ARC_NUMBER"
+                        reference: "Reference number"
+                    costs:
+                    - costType: "INSURANCE"
+                      costTypeQualifier: "DUTY_COSTS"
+                      customsProcess: "EXPORT_BE"
+                      value:
+                        value: "100"
+                        currencyIso: "USD"
+                    attachments:
+                    - attachmentCode: "example.txt"
+                      customsProcess: "EXPORT_NL"
+                      data: "SnVzdCBhbiBleGFtcGxlIGZpbGU="
+                      description: "Just an example file"
+        required: true
+  /getDeclarations:
+    post:
+      tags:
+      - "Get Declarations"
+      summary: "Get declarations by busniess object ids (consignments)"
+      description: "Returns the declarations specified by the list of business object\
+        \ ids in the request. You may also specify the amount of declaration data\
+        \ returned by choosing from a set of scenarios."
+      operationId: "getDeclarations"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ICGetDeclarationsRequestDTO"
+      responses:
+        "401":
+          description: "Unauthorized"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponseBody"
+        "403":
+          description: "Forbidden"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponseBody"
+        "404":
+          description: "Not Found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponseBody"
+        "405":
+          description: "Method Not Allowed"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponseBody"
+        "415":
+          description: "Unsupported Media Type"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponseBody"
+        default:
+          description: "default response"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ICGetDeclarationsResponseDTO"
+  /synchronizeEvents:
+    post:
+      tags:
+      - "Synchronize Events"
+      summary: "Poll the next events for the client system"
+      description: "Poll the next events for the client system.<br> This method requires\
+        \ the client system to persist the synchronisation state itself and passing\
+        \ a proper value for {@link SyncEventsRequestDTO#syncId}<br> See {@link #getNotAcknowledgedEvents(SyncEventsRequestDTO)}\
+        \ for a version of the method, were the syncronisation state is kept within\
+        \ the Engine."
+      operationId: "synchronizeEvents"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SyncEventsRequestDTO"
+      responses:
+        "401":
+          description: "Unauthorized"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponseBody"
+        "403":
+          description: "Forbidden"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponseBody"
+        "404":
+          description: "Not Found"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponseBody"
+        "405":
+          description: "Method Not Allowed"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponseBody"
+        "415":
+          description: "Unsupported Media Type"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/errorResponseBody"
+        default:
+          description: "default response"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SyncEventsResponseDTO"
+components:
+  schemas:
+    SyncEventsResponseDTO:
+      type: "object"
+      properties:
+        hasErrors:
+          type: "boolean"
+          description: "<p>True, if there are any error messages.</p><p>An error usually\
+            \ means that the request could not be performed.</p><p>Error details are\
+            \ provided in the messages[] array.</p>"
+          example: false
+        hasOnlyRetryableErrors:
+          type: "boolean"
+          description: "<p>True, if there are any error messages.</p><p>Error details\
+            \ are provided in the messages[] array.</p>"
+          example: true
+        hasWarnings:
+          type: "boolean"
+          description: "<p>True, if there are any error messages.</p><p>Error details\
+            \ are provided in the messages[] array.</p>"
+          example: true
+        messages:
+          type: "array"
+          description: "<p>Error or warning messages at the request level.</p><p>There\
+            \ may be additional messages[] arrays at lower data levels as specified\
+            \ in the documentation.</p>"
+          items:
+            $ref: "#/components/schemas/ResponseMessageDTO"
+        syncId:
+          type: "string"
+          description: "Synchronization ID for delta-transmission. <p> Use this syncId\
+            \ in subsequent calls to {@link ISyncBF#synchronizeEvents(SyncEventsRequestDTO)}\
+            \ to enabledelta-transmission of changes. </p> <p> However, this syncId\
+            \ may be null if no events are found an the field {@link SyncEventsResponseDTO#events}\
+            \ is an empty array. In this case usethe last NOT NULL syncId returned\
+            \ in this field for subsequent calls to {@link ISyncBF#synchronizeEvents(SyncEventsRequestDTO)}.\
+            \ </p> <p> length=20 </p>"
+        isComplete:
+          type: "boolean"
+          description: "True, if the synchronization is complete and currently no\
+            \ further events are available. False if not. <p> Because a maximum of\
+            \ 100 events are returned with one call of {@link ISyncBF#synchronizeEvents(SyncEventsRequestDTO)},\
+            \ the result may be incomplete. </p>"
+        events:
+          type: "array"
+          description: "The resulting events, matching the requested parameters. <p>\
+            \ A maximum number of 100 events are transmitted per call. </p> <p> To\
+            \ get ALL events make repeated calls of {@link ISyncBF#synchronizeEvents(SyncEventsRequestDTO)},\
+            \ always passing the last returned  {@link SyncEventsResponseDTO#syncId}\
+            \ in the next callwith  {@link SyncEventsRequestDTO#syncId}. </p>"
+          items:
+            $ref: "#/components/schemas/SyncEventDTO"
+      description: "Response DTO for synchronizing events."
+    SyncEventDTO:
+      type: "object"
+      properties:
+        businessObjectType:
+          maxLength: 20
+          type: "string"
+          description: "Code which identifies the business object type the event belongs\
+            \ to."
+        businessObjectQualifier:
+          maxLength: 35
+          type: "string"
+          description: "Optional qualifier which can be used to specify the object\
+            \ in a more detailed way."
+        businessObjectId:
+          maxLength: 36
+          type: "string"
+          description: "Unique ID of the business object. <p> This ID is usually needed\
+            \ for subsequent calls, e.g. getBusinessObject(...) </p>"
+        eventType:
+          maxLength: 20
+          type: "string"
+          description: "Type of the event (e.g. CREATE, UPDATE or DELETE). <p> Depending\
+            \ on the business object type and its configuration, additional event\
+            \ types are possible. </p>"
+        eventDate:
+          $ref: "#/components/schemas/DateAndZoneDTO"
+        parameter:
+          $ref: "#/components/schemas/GenericDataRecordDTO"
+      description: "DTO to hold data of one synchronized event."
+    GenericDataFieldDTO:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+          description: "<p>Name of this field, i.e. the role the field plays in the\
+            \ enclosing record.</p>  <p>When the same name is repeated in the context\
+            \ of the same parent record,  it is assumed that the parent defines this\
+            \ element as a repeatable (array) element.</p>"
+        value:
+          type: "string"
+          description: "<p>Value of the field.</p>  <p>The format follows the conventions\
+            \ of xml schema encoding, see <a href=\"http://www.w3.org/TR/xmlschema-2/\"\
+            >http://www.w3.org/TR/xmlschema-2/</a>.</p> <h3>Currently implemented\
+            \ formats:</h3>  <ul>  <li>string - the plain string</li> <li>int - digits\
+            \ base10, +-2^31</li> <li>long - digits base10, +-2^63</li> <li>decimal\
+            \ - +-123456.789</li> <li>boolean - the literals 'true' and 'false'</li>\
+            \ <li>dateTime - yyyy-MM-ddTHH:mm:ss</li> <li>base64Binary - binary data\
+            \ in base64 encoding</li> </ul>"
+        type:
+          type: "string"
+          description: "<p>Data type of the field.</p> <p>This is not strictly necessary\
+            \ since the receiving entity should be able to infer the structure  with\
+            \ its own meta data; it may be used however for sanity checks.</p> <p>The\
+            \ format follows the conventions of xml schema encoding, see <a href=\\\
+            \"http://www.w3.org/TR/xmlschema-2/\\\">http://www.w3.org/TR/xmlschema-2/</a>.</p>\
+            \ <h3>Currently implemented formats:</h3>  <ul>  <li>string</li> <li>int</li>\
+            \ <li>long</li> <li>decimal</li> <li>boolean</li> <li>dateTime</li> <li>base64Binary</li>\
+            \ </ul>"
+      description: "A field of a generic data record."
+    GenericDataRecordDTO:
+      type: "object"
+      properties:
+        fields:
+          type: "array"
+          description: "The fields of the record."
+          items:
+            $ref: "#/components/schemas/GenericDataFieldDTO"
+        subrecords:
+          type: "array"
+          description: "Subrecords of the record."
+          items:
+            $ref: "#/components/schemas/NamedGenericDataRecordDTO"
+      description: "A generic record of data.<br> From within Java, consider to use\
+        \ the wrapper class {@link de.aeb.xnsg.foundation.bc.genericdata.GenericDataRecordDTOWrapper}\
+        \ for easier handling and {@link de.aeb.xnsg.foundation.bc.genericdata.GenericDataRecordDTOMapping}\
+        \ for mapping from and to other DTOs."
+    NamedGenericDataRecordDTO:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+          description: "The name of this record, i.e. the role the record plays in\
+            \ the enclosing record.<br> When the same name is repeated in the context\
+            \ of the same parent record,  it is assumed that the parent defines this\
+            \ element as a repeatable (array) element."
+        record:
+          $ref: "#/components/schemas/GenericDataRecordDTO"
+      description: "A generic data record with a name.<br> Wrapper class to encapsulate\
+        \ subrecords with their name and with the ability to have explicit null records."
+    SyncEventsRequestDTO:
+      type: "object"
+      properties:
+        clientSystemId:
+          type: "string"
+          description: "<p>Id of the sending client system.</p><p>e.g. Installation\
+            \ id of AEB systems.</p><p>Maximum length: 20</p>"
+          example: "XNSG_TEST"
+        clientIdentCode:
+          type: "string"
+          description: "<p>Client identification code.</p><p>Maximum length: 10</p>"
+          example: "APITEST"
+        userName:
+          type: "string"
+          description: "<p>User who initiated the request from the client system.</p><p>If\
+            \ the user is found either in the system's user management or in a connected\
+            \ LDAP directory, the request runs under this user's roles.</p><p>If the\
+            \ user is not found, the request is only granted the basic 'I_EVERYONE'\
+            \ role. The user name may be used for logging purposes in this case.</p><p>Actual\
+            \ authentication is handled separately via the request's headers, so no\
+            \ password is required in the request's data.</p>"
+          example: "API_TEST"
+        resultLanguageIsoCodes:
+          type: "array"
+          description: "<p>2-letter ISO codes of the languages in which texts will\
+            \ be returned.</p><p>English ('en') and German ('de') are typically supported\
+            \ by default. Other languages may be supported.</p><p>Translations will\
+            \ be looked up in the order of the provided language codes. If a translation\
+            \ is not available in one language, the next language is used instead.</p>"
+          example:
+          - "en"
+          - "de"
+          items:
+            type: "string"
+            description: "<p>2-letter ISO codes of the languages in which texts will\
+              \ be returned.</p><p>English ('en') and German ('de') are typically\
+              \ supported by default. Other languages may be supported.</p><p>Translations\
+              \ will be looked up in the order of the provided language codes. If\
+              \ a translation is not available in one language, the next language\
+              \ is used instead.</p>"
+            example: "[\"en\",\"de\"]"
+        syncId:
+          type: "string"
+          description: "Synchronization ID for delta-transmission. <p> In calls to\
+            \  {@link ISyncBF#synchronizeEvents(SyncEventsRequestDTO)}:<br> Pass this\
+            \ field with the value returned in {@link SyncEventsResponseDTO#syncId}\
+            \ with the last call to{@link ISyncBF#synchronizeEvents(SyncEventsRequestDTO)}.<br>\
+            \ For initializing of delta-transmissions pass simply null. </p> <p> </p>\
+            \ In calls to  {@link ISyncBF#getNotAcknowledgedEvents(SyncEventsRequestDTO)}\
+            \ this field is not used.<br><p> length=20 </p>"
+        businessObjectType:
+          type: "string"
+          description: "Optional parameter to resctrict the events to be polled to\
+            \ that business object type. May be null to get all subscribed events\
+            \ of all business object types.<br> Since XNSG 4.0, Nov. FP, 2017<br>\
+            \ length=20"
+        ageInDays:
+          type: "integer"
+          description: "Only for the initializing of delta-transmissions (if {@link\
+            \ SyncEventsRequestDTO#syncId} == null)<p> Start the initializing of delta\
+            \ transmission with with this age. Older events will not be synchronized.\
+            \ </p>"
+          format: "int32"
+        blockSize:
+          type: "integer"
+          description: "For defining the block size. Can be null. If empty the default\
+            \ block size of 100 is used."
+          format: "int32"
+      description: "Request DTO for synchronizing events."
+    ICGetDeclarationsRequestDTO:
+      type: "object"
+      properties:
+        clientSystemId:
+          type: "string"
+          description: "<p>Id of the sending client system.</p><p>e.g. Installation\
+            \ id of AEB systems.</p><p>Maximum length: 20</p>"
+          example: "XNSG_TEST"
+        clientIdentCode:
+          type: "string"
+          description: "<p>Client identification code.</p><p>Maximum length: 10</p>"
+          example: "APITEST"
+        userName:
+          type: "string"
+          description: "<p>User who initiated the request from the client system.</p><p>If\
+            \ the user is found either in the system's user management or in a connected\
+            \ LDAP directory, the request runs under this user's roles.</p><p>If the\
+            \ user is not found, the request is only granted the basic 'I_EVERYONE'\
+            \ role. The user name may be used for logging purposes in this case.</p><p>Actual\
+            \ authentication is handled separately via the request's headers, so no\
+            \ password is required in the request's data.</p>"
+          example: "API_TEST"
+        resultLanguageIsoCodes:
+          type: "array"
+          description: "<p>2-letter ISO codes of the languages in which texts will\
+            \ be returned.</p><p>English ('en') and German ('de') are typically supported\
+            \ by default. Other languages may be supported.</p><p>Translations will\
+            \ be looked up in the order of the provided language codes. If a translation\
+            \ is not available in one language, the next language is used instead.</p>"
+          example:
+          - "en"
+          - "de"
+          items:
+            type: "string"
+            description: "<p>2-letter ISO codes of the languages in which texts will\
+              \ be returned.</p><p>English ('en') and German ('de') are typically\
+              \ supported by default. Other languages may be supported.</p><p>Translations\
+              \ will be looked up in the order of the provided language codes. If\
+              \ a translation is not available in one language, the next language\
+              \ is used instead.</p>"
+            example: "[\"en\",\"de\"]"
+        declarationTypeCode:
+          type: "string"
+          description: "Type of declaration. <p> Possible values: <ul> <li> {@value\
+            \ #TYPE_CODE_EXPDECL}</li> <li> {@value #TYPE_CODE_IMPDECL}</li> <li>\
+            \ {@value #TYPE_CODE_TRANSDECL}</li> <li> {@value #TYPE_CODE_ENSDECL}\
+            \ </li> <li> {@value #TYPE_CODE_SUMDECL} </li> <li> {@value #TYPE_CODE_GOODSMOVERECORD}\
+            \ </li></ul>"
+        customsProcess:
+          $ref: "#/components/schemas/ICCustomsProcessTypeDTO"
+        businessObjectIds:
+          type: "array"
+          description: "IDs of the declarations. <p> length=20 </p>"
+          items:
+            type: "string"
+            description: "IDs of the declarations. <p> length=20 </p>"
+        scenarios:
+          type: "array"
+          description: "Scenarios defining the data to be included. If no scenario\
+            \ is given, BASE is assumed. <p> Possible values: <ul> <li>BASE - Some\
+            \ basic data</li> <li>ATTACHMENTS - Documents (e.g. EAD)</li> <li>HEAD\
+            \ - Basic values and data from head level</li> <li>ITEM - basic values\
+            \ head level data and item level data</li> </ul>"
+          items:
+            type: "string"
+            description: "Scenarios defining the data to be included. If no scenario\
+              \ is given, BASE is assumed. <p> Possible values: <ul> <li>BASE - Some\
+              \ basic data</li> <li>ATTACHMENTS - Documents (e.g. EAD)</li> <li>HEAD\
+              \ - Basic values and data from head level</li> <li>ITEM - basic values\
+              \ head level data and item level data</li> </ul>"
+      description: "Request for declaration data."
+    ICGetDeclarationsResponseDTO:
+      type: "object"
+      properties:
+        hasErrors:
+          type: "boolean"
+          description: "<p>True, if there are any error messages.</p><p>An error usually\
+            \ means that the request could not be performed.</p><p>Error details are\
+            \ provided in the messages[] array.</p>"
+          example: false
+        hasOnlyRetryableErrors:
+          type: "boolean"
+          description: "<p>True, if there are any error messages.</p><p>Error details\
+            \ are provided in the messages[] array.</p>"
+          example: true
+        hasWarnings:
+          type: "boolean"
+          description: "<p>True, if there are any error messages.</p><p>Error details\
+            \ are provided in the messages[] array.</p>"
+          example: true
+        messages:
+          type: "array"
+          description: "<p>Error or warning messages at the request level.</p><p>There\
+            \ may be additional messages[] arrays at lower data levels as specified\
+            \ in the documentation.</p>"
+          items:
+            $ref: "#/components/schemas/ResponseMessageDTO"
+        declarations:
+          type: "array"
+          description: "Data of the requested declarations."
+          items:
+            $ref: "#/components/schemas/ICDeclarationDTO"
+      description: "Response containing requested declarations."
+    ICLinkedProcessInfoDTO:
+      type: "object"
+      properties:
+        processType:
+          maxLength: 20
+          type: "string"
+          description: "Specific type of process: <ul> <li>PORT_ANTWERP - C-Point\
+            \ system for port notifications. <li>PORT_ROTTERDAM - Prtbase system for\
+            \ port notifications. <li>'... for full list see /InternationalCustomsBFBean/getCodes\
+            \ with codeListCode=LINKED_PROCESS_TYPE </li>  </ul>"
+        authoritySystemId:
+          maxLength: 50
+          type: "string"
+          description: "The id in the customs/port authority's system."
+        issueDate:
+          $ref: "#/components/schemas/DateAndZoneDTO"
+      description: "DTO to hold data of a customs process that is linked to the main\
+        \ declaration object. "
+    ICDeclarationDTO:
+      type: "object"
+      properties:
+        clientSystemId:
+          type: "string"
+          description: "Id of the sending client system. <p>length=20</p>"
+        customsProcessCode:
+          maxLength: 20
+          type: "string"
+          description: "Customs process the object belongs to."
+          deprecated: true
+        customsProcess:
+          $ref: "#/components/schemas/ICCustomsProcessTypeDTO"
+        businessObjectId:
+          type: "string"
+          description: "ID of the declaration. <p> length=10 </p>"
+        declarationTypeCode:
+          type: "string"
+          description: "Type of declaration. <p> Possible values: <ul> <li> {@value\
+            \ ICGetDeclarationsRequestDTO#TYPE_CODE_EXPDECL}</li> <li> {@value ICGetDeclarationsRequestDTO#TYPE_CODE_IMPDECL}</li>\
+            \ <li> {@value ICGetDeclarationsRequestDTO#TYPE_CODE_TRANSDECL}</li> </ul>\
+            \ <p> Since FP Nov. 2017. </p>"
+        isDeleted:
+          type: "boolean"
+          description: "Indicates whether the object has been logically deleted."
+        decisiveDate:
+          $ref: "#/components/schemas/DateAndZoneDTO"
+        localReference:
+          type: "string"
+          description: "Local unique reference number. <p> length=35 </p>"
+        customsRegistrationNumber:
+          type: "string"
+          description: "Registration number given by customs (e.g. MRN, CRN, ...)\
+            \ <p> length=35 </p>"
+        linkedProcessInfos:
+          type: "array"
+          description: "<p>Registration numbers of linked processes.<p><p>Currently\
+            \ only supported for port notifications created in Customs Management.</p>"
+          items:
+            $ref: "#/components/schemas/ICLinkedProcessInfoDTO"
+        declarationVersion:
+          type: "string"
+          description: "The current version of the declaration. Only filled if supported\
+            \ by customs. <p> length=10 </p>"
+        commercialReferenceNumber:
+          type: "string"
+          description: "Commercial reference number. <p> length=35 </p>"
+        deliveryNumber:
+          type: "string"
+          description: "Reference number of the delivery. <p> length=70 </p>"
+        invoiceNumber:
+          type: "string"
+          description: "Reference number of the invoice. <p> length=70 </p>"
+        organizationUnitClientSystem:
+          type: "string"
+          description: "Additional criteria two separate different organizational\
+            \ units within one client. <p> length=255 </p>"
+        consignmentUid:
+          type: "string"
+          description: "The business object UID of the consignment. <p> length=20\
+            \ </p>"
+        consignmentNumber:
+          type: "string"
+          description: "Reference number of the consignment. <p> length=70 </p>"
+        consignmentIdClientSystem:
+          type: "string"
+          description: "Unique id of the consignment within the ERP system <p> length=255\
+            \ </p>"
+        status:
+          $ref: "#/components/schemas/ICBusinessObjectStatusDTO"
+        isValid:
+          type: "boolean"
+          description: "True, if the business object is (still) valid. Else false."
+        personInCharge:
+          $ref: "#/components/schemas/ICPersonDTO"
+        totalGrossMass:
+          $ref: "#/components/schemas/QuantityDTO"
+        totalNetMass:
+          $ref: "#/components/schemas/QuantityDTO"
+        totalInvoicePrice:
+          $ref: "#/components/schemas/AmountOfMoneyDTO"
+        totalNumberItems:
+          type: "integer"
+          description: "Total number of items in the declaration."
+          format: "int32"
+        totalNumberPackages:
+          type: "integer"
+          description: "Total number of packages in the declaration."
+          format: "int32"
+        dispatchCountryCode:
+          type: "string"
+          description: "Country ISO code of the dispatch country. <p> length=2 </p>"
+        destinationCountryCode:
+          type: "string"
+          description: "Country ISO code of the destination country. <p> length=2\
+            \ </p>"
+        additionalReference1:
+          type: "string"
+          description: "Additional reference."
+        extension:
+          $ref: "#/components/schemas/ICDeclarationExtensionDataDTO"
+        parties:
+          type: "array"
+          description: "List of involved parties."
+          items:
+            $ref: "#/components/schemas/ICPartyDTO"
+        customsOffices:
+          type: "array"
+          description: "List of involved customs offices."
+          items:
+            $ref: "#/components/schemas/ICCustomsOfficeDTO"
+        amountsOfMoney:
+          type: "array"
+          description: "List of amount of moneys."
+          items:
+            $ref: "#/components/schemas/ICAmountOfMoneyDTO"
+        transportMeans:
+          type: "array"
+          description: "List of involved transport means."
+          items:
+            $ref: "#/components/schemas/ICTransportMeansDTO"
+        dates:
+          type: "array"
+          description: "List of dates with times."
+          items:
+            $ref: "#/components/schemas/ICDateDTO"
+        items:
+          type: "array"
+          description: "List of items."
+          items:
+            $ref: "#/components/schemas/ICDeclarationItemDTO"
+        attachments:
+          type: "array"
+          description: "List of attachments.<br/> Only contains attachments for which\
+            \ the attachment content is present in ICI (attachment contents will be\
+            \ deleted some time after archiving an attachment)."
+          items:
+            $ref: "#/components/schemas/ICAttachmentDTO"
+      description: "DTO to hold data of a declaration."
+    ICDeclarationItemDTO:
+      type: "object"
+      properties:
+        sequenceNumber:
+          type: "integer"
+          description: "Sequence number of the item. <p> length=5 </p>"
+          format: "int32"
+        status:
+          $ref: "#/components/schemas/ICBusinessObjectStatusDTO"
+        grossMass:
+          $ref: "#/components/schemas/QuantityDTO"
+        netMass:
+          $ref: "#/components/schemas/QuantityDTO"
+        extension:
+          $ref: "#/components/schemas/ICDeclarationItemExtensionDataDTO"
+        clientSystemIds:
+          type: "array"
+          description: "IDs of contained items from the sending client system."
+          items:
+            type: "string"
+            description: "IDs of contained items from the sending client system."
+        goodsDescription:
+          type: "array"
+          description: "Goods description in requested languages."
+          items:
+            $ref: "#/components/schemas/TextInLanguageDTO"
+        classifications:
+          type: "array"
+          description: "List of classifications."
+          items:
+            $ref: "#/components/schemas/ICClassificationDTO"
+        quantities:
+          type: "array"
+          description: "List of quantites."
+          items:
+            $ref: "#/components/schemas/ICQuantityDTO"
+        amountsOfMoney:
+          type: "array"
+          description: "List of amount of moneys."
+          items:
+            $ref: "#/components/schemas/ICAmountOfMoneyDTO"
+        parties:
+          type: "array"
+          description: "List of involved parties."
+          items:
+            $ref: "#/components/schemas/ICPartyDTO"
+        customsProcedures:
+          type: "array"
+          description: "List of customs procedure codes."
+          items:
+            $ref: "#/components/schemas/ICCustomsProcedureDTO"
+      description: "DTO to hold data of a declaration item."
+    ICDeclarationItemExtensionDataDTO:
+      type: "object"
+      properties:
+        exportCH:
+          $ref: "#/components/schemas/ICDeclarationItemCHDTO"
+        importCH:
+          $ref: "#/components/schemas/ICDeclarationItemCHDTO"
+      description: "DTO to hold declaration item extension data for customs processes.\
+        \ Not all customs processes are supported."
+    ICDeclarationItemCHDTO:
+      type: "object"
+      properties:
+        customsSequenceNumber:
+          type: "integer"
+          description: "Customs sequence number of the item. <p> length=5 </p>"
+          format: "int32"
+        selectionResultCode:
+          type: "string"
+          description: "Selection result. <p>length=1</p>"
+        preliminaryDutyValuationRate:
+          type: "number"
+          description: "Valuation rate. <p>length=7,2</p>"
+        dutyAssessmentCode:
+          type: "string"
+          description: "Assessment code for customs duty. <p>length=2</p>"
+        isNetDuty:
+          type: "string"
+          description: "Net duty <p>length=1</p>"
+        tareSupplement:
+          type: "number"
+          description: "Tare supplement. <p>length=4,1</p>"
+        tareSupplementConfirmation:
+          type: "string"
+          description: "Confirmation code for tare supplement <p>length=1</p>"
+        isEligiblePreference:
+          type: "string"
+          description: "Preferential flag. <p>length=1</p>"
+        customsNetWeight:
+          $ref: "#/components/schemas/QuantityDTO"
+      description: "CH specific extension data for a declaration item."
+    ICDateDTO:
+      type: "object"
+      properties:
+        dateCode:
+          type: "string"
+          description: "Code specifying the type of date. <p>length=20</p>"
+        date:
+          $ref: "#/components/schemas/DateAndZoneDTO"
+      description: "DTO to hold data representing an date with optional time."
+    ICAmountOfMoneyDTO:
+      type: "object"
+      properties:
+        amountCode:
+          type: "string"
+          description: "Code specifying the type of monetary amount. <p>length=20</p>"
+        amount:
+          $ref: "#/components/schemas/AmountOfMoneyDTO"
+      description: "DTO to hold data representing an amount."
+    ICDeclarationExtensionDataDTO:
+      type: "object"
+      properties:
+        exportCH:
+          $ref: "#/components/schemas/ICDeclarationCHDTO"
+        importCH:
+          $ref: "#/components/schemas/ICDeclarationCHDTO"
+        exportGB:
+          $ref: "#/components/schemas/ICDeclarationGBDTO"
+        importGB:
+          $ref: "#/components/schemas/ICDeclarationGBDTO"
+        exportBroker:
+          $ref: "#/components/schemas/ICDeclarationBrokerDTO"
+        importBroker:
+          $ref: "#/components/schemas/ICDeclarationBrokerDTO"
+      description: "DTO to hold declaration extension data for customs processes.\
+        \ Not all customs processes are supported."
+    ICDeclarationBrokerDTO:
+      type: "object"
+      properties:
+        customsBrokerDeclarations:
+          type: "array"
+          description: "Customs broker declarations."
+          items:
+            $ref: "#/components/schemas/ICCustomsBrokerDeclarationDTO"
+      description: "Broker specific extension data for a declaration."
+    ICCustomsBrokerDeclarationDTO:
+      type: "object"
+      properties:
+        customsRegistrationNumber:
+          type: "string"
+          description: " Customs registration numbers (CRN/MRN). <p>length=35</p>"
+      description: "DTO to hold data for customs broker declaration"
+    ICDeclarationGBDTO:
+      type: "object"
+      properties:
+        declarationMethodCode:
+          type: "string"
+          description: "Declaration method code. <p>length=3</p>"
+        declarationUniqueConsignmentReference:
+          type: "string"
+          description: "DUCR. <p>length=35</p>"
+        ducrPartNumber:
+          type: "string"
+          description: "DUCR part number. <p>length=4</p>"
+        masterUniqueConsignmentReference:
+          type: "string"
+          description: "MUCR. <p>length=35</p>"
+        acaReference:
+          type: "string"
+          description: "ACA reference of the cargo report. <p>length=12</p>"
+        entryProcessingUnit:
+          type: "string"
+          description: "CHIEF Entry EPU. <p>length=3</p>"
+        entryNumber:
+          type: "string"
+          description: "CHIEF Entry Number. <p>length=7</p>"
+        entryDate:
+          $ref: "#/components/schemas/DateAndZoneDTO"
+        departedDate:
+          $ref: "#/components/schemas/DateAndZoneDTO"
+        deferredPayments:
+          type: "array"
+          description: "Deferred payments."
+          items:
+            $ref: "#/components/schemas/ICDeferredPaymentDTO"
+      description: "GB specific extension data for a declaration."
+    ICDeferredPaymentDTO:
+      type: "object"
+      properties:
+        categoryCode:
+          type: "string"
+          description: "Deferment category code. <p>length=1</p>"
+        typeCode:
+          type: "string"
+          description: "Deferment type code. <p>length=1</p>"
+        deferralAccountNumber:
+          type: "string"
+          description: "Number of the deferment account. <p>length=7</p>"
+      description: "DTO to hold data for deferred payments."
+    ICDeclarationCHDTO:
+      type: "object"
+      properties:
+        selectionResultCode:
+          type: "string"
+          description: "Selection result. <p>length=1</p>"
+        customsStatusCodeCode:
+          type: "string"
+          description: "Customs status code. <p>length=3</p>"
+        releaseStatus:
+          type: "string"
+          description: "Release status. <p>length=1</p>"
+        materialCheckStatus:
+          type: "string"
+          description: "Material check status. <p>length=1</p>"
+        items:
+          type: "array"
+          description: "Additional item data"
+          items:
+            $ref: "#/components/schemas/ICDeclarationItemCHDTO"
+      description: "CH specific extension data for a declaration."
+    ICBusinessObjectStatusDTO:
+      type: "object"
+      properties:
+        statusCode:
+          type: "string"
+          description: "Status code. Use API call getCodes with codeListCode 'STATUS_TYPE'\
+            \ to discover all valid codes. <p> length=20 </p>"
+        progressCode:
+          type: "string"
+          description: "Progress code. Valid codes are: USER_ACTION, ERROR, WAITING,\
+            \ ACCEPTED and COMPLETE. <p> length=20 </p>"
+        progressInformation:
+          type: "array"
+          description: "Optional human readable information on the current progress\
+            \ e.g. what kind of user action is required. <p> length = 100 </p>"
+          items:
+            $ref: "#/components/schemas/TextInLanguageDTO"
+        variantCode:
+          type: "string"
+          description: "Variant code. Use API call getCodes with codeListCode 'DECLARATION_VARIANT_TYPE'\
+            \ to discover all valid codes. <p> length=20 </p>"
+      description: "DTO to hold data of a status."
+    ICCustomsProcessTypeDTO:
+      type: "object"
+      properties:
+        customsProcess:
+          maxLength: 35
+          type: "string"
+          description: "<p>Specific customs process. <ul><li>'EXPORT_BE' - Export\
+            \ process for Belgium</li> <li>'EXPORT_SE' - Export process for Sweden</li>\
+            \ <li>'EXPORT_NL' - Export process for Netherlands</li> <li>'TRANSIT_NL'\
+            \ - Transit process for Netherlands</li> <li>For full list see /InternationalCustomsBFBean/getCodes\
+            \ with codeListCode=CUSTOMS_PROCESS_TYPE.</li></ul></p>"
+          example: "EXPORT_BROKER"
+        countrySetupIdentCode:
+          maxLength: 2
+          type: "string"
+          description: "<p>Country setup ident code for the customs process (Broker).</p><p>Only\
+            \ used in response DTOs (ICDeclarationDTO) </p>"
+          example: "CN"
+      description: "DTO to hold the customs process type."
+    ICCreateConsignmentRequestDTO:
+      type: "object"
+      properties:
+        clientSystemId:
+          type: "string"
+          description: "<p>Id of the sending client system.</p><p>e.g. Installation\
+            \ id of AEB systems.</p><p>Maximum length: 20</p>"
+          example: "XNSG_TEST"
+        clientIdentCode:
+          type: "string"
+          description: "<p>Client identification code.</p><p>Maximum length: 10</p>"
+          example: "APITEST"
+        userName:
+          type: "string"
+          description: "<p>User who initiated the request from the client system.</p><p>If\
+            \ the user is found either in the system's user management or in a connected\
+            \ LDAP directory, the request runs under this user's roles.</p><p>If the\
+            \ user is not found, the request is only granted the basic 'I_EVERYONE'\
+            \ role. The user name may be used for logging purposes in this case.</p><p>Actual\
+            \ authentication is handled separately via the request's headers, so no\
+            \ password is required in the request's data.</p>"
+          example: "API_TEST"
+        resultLanguageIsoCodes:
+          type: "array"
+          description: "<p>2-letter ISO codes of the languages in which texts will\
+            \ be returned.</p><p>English ('en') and German ('de') are typically supported\
+            \ by default. Other languages may be supported.</p><p>Translations will\
+            \ be looked up in the order of the provided language codes. If a translation\
+            \ is not available in one language, the next language is used instead.</p>"
+          example:
+          - "en"
+          - "de"
+          items:
+            type: "string"
+            description: "<p>2-letter ISO codes of the languages in which texts will\
+              \ be returned.</p><p>English ('en') and German ('de') are typically\
+              \ supported by default. Other languages may be supported.</p><p>Translations\
+              \ will be looked up in the order of the provided language codes. If\
+              \ a translation is not available in one language, the next language\
+              \ is used instead.</p>"
+            example: "[\"en\",\"de\"]"
+        consignment:
+          $ref: "#/components/schemas/ICConsignmentDTO"
+      description: "The DTO for the request."
+    ICCreateConsignmentResponseDTO:
+      type: "object"
+      properties:
+        hasErrors:
+          type: "boolean"
+          description: "<p>True, if there are any error messages.</p><p>An error usually\
+            \ means that the request could not be performed.</p><p>Error details are\
+            \ provided in the messages[] array.</p>"
+          example: false
+        hasOnlyRetryableErrors:
+          type: "boolean"
+          description: "<p>True, if there are any error messages.</p><p>Error details\
+            \ are provided in the messages[] array.</p>"
+          example: true
+        hasWarnings:
+          type: "boolean"
+          description: "<p>True, if there are any error messages.</p><p>Error details\
+            \ are provided in the messages[] array.</p>"
+          example: true
+        messages:
+          type: "array"
+          description: "<p>Error or warning messages at the request level.</p><p>There\
+            \ may be additional messages[] arrays at lower data levels as specified\
+            \ in the documentation.</p>"
+          items:
+            $ref: "#/components/schemas/ResponseMessageDTO"
+        consignment:
+          $ref: "#/components/schemas/ICConsignmentResultDTO"
+      description: "The response DTO after processing the request. Contains the resulting\
+        \ consignment DTO."
+    ICConsignmentResultDTO:
+      type: "object"
+      properties:
+        businessObjectId:
+          type: "string"
+          description: "The business object id of the consignment in the system. <p>length=20</p>"
+        installationIdClientSystem:
+          type: "string"
+          description: "Id of the ERP system. Important so separate two different\
+            \ ERP systems within on Engine's client. <p> length=20 </p>"
+        decisiveDate:
+          $ref: "#/components/schemas/DateAndZoneDTO"
+        consignmentNumber:
+          type: "string"
+          description: "Reference number of the consignment. <p> length=70 </p>"
+        deliveryNumber:
+          type: "string"
+          description: "Reference number of the delivery. <p> length=70 </p>"
+      description: "The result DTO which contains the information to the consignment\
+        \ created on the system."
+    DateAndZoneDTO:
+      type: "object"
+      properties:
+        dateInTimezone:
+          type: "string"
+          description: "<p>String representation of the date/time stamp in the format\
+            \ yyyy-MM-dd HH:mm:ss</p> <p>Length: 19</p>"
+        timezone:
+          type: "string"
+          description: "<p>Time zone of the time stamp.</p> <p>Examples of valid time\
+            \ zones: \"GMT+01:00\" or \"GMT-02:00\".</p> <p>Maximum length: 50</p>"
+      description: "Date and timezone."
+    ICConsignmentDTO:
+      type: "object"
+      properties:
+        consignmentIdClientSystem:
+          type: "string"
+          description: "Unique id of the consignment within the ERP system <p> length=255\
+            \ </p>"
+        organizationUnitClientSystem:
+          type: "string"
+          description: "Additional criteria two separate different organisational\
+            \ units within one Engine's client. <p> length=255 </p>"
+        consignmentNumber:
+          type: "string"
+          description: "Reference number of the consignment. <p> length=70 </p>"
+        remark:
+          type: "string"
+          description: "Optional textual remark <p> length=1000 </p>"
+        profileCode:
+          type: "string"
+          description: "Ident code of the consignment profile which is configured\
+            \ in the Engine. The consignment profile manages mainly the transmutation.\
+            \ <p> length=50 </p>"
+        personInCharge:
+          $ref: "#/components/schemas/ICPersonDTO"
+        deliveries:
+          type: "array"
+          description: "List of deliveries."
+          items:
+            $ref: "#/components/schemas/ICDeliveryDTO"
+        costs:
+          type: "array"
+          description: "A list of costs like freight cost, insurance or additonal\
+            \ cost for the consignment"
+          items:
+            $ref: "#/components/schemas/ICCostDTO"
+        attachments:
+          type: "array"
+          description: "List of attached documents."
+          items:
+            $ref: "#/components/schemas/ICAttachmentDTO"
+    ICAttachmentDTO:
+      type: "object"
+      properties:
+        attachmentCode:
+          maxLength: 250
+          type: "string"
+          description: "Code of the attachment.<br> When adding external attachments\
+            \ the attachmentCode must be filled a with filename (including a file\
+            \ extension)."
+        customsProcess:
+          maxLength: 20
+          type: "string"
+          description: "<p>Specific customs process. <ul><li>'EXPORT_BE' - Export\
+            \ process for Belgium</li> <li>'EXPORT_SE' - Export process for Sweden</li>\
+            \ <li>'EXPORT_NL' - Export process for Netherlands</li> <li>'TRANSIT_NL'\
+            \ - Transit process for Netherlands</li> <li>... for full list see /InternationalCustomsBFBean/getCodes\
+            \ with codeListCode=CUSTOMS_PROCESS_TYPE</li></ul></p>"
+          example: "EXPORT_BE"
+        data:
+          type: "array"
+          description: "Attachment data."
+          items:
+            type: "string"
+            description: "Attachment data."
+            format: "byte"
+        statusCode:
+          maxLength: 20
+          type: "string"
+          description: "Attachment status.<br> Only used when attachments are returned\
+            \ by ICI."
+        description:
+          maxLength: 250
+          type: "string"
+          description: "Description of the document.<br> Only used when attachments\
+            \ are returned by ICI."
+      description: "DTO to hold attachment data."
+    ICCostDTO:
+      type: "object"
+      properties:
+        costType:
+          maxLength: 35
+          type: "string"
+          description: "Specific cost type: <ul> <li>TRANSPORT - Transport costs</li>\
+            \ <li>INSURANCE - Insurance costs</li>> <li>ADDITIONAL - Additional costs</li>\
+            \ <li>'... for full list see /InternationalCustomsBFBean/getCodes with\
+            \ codeListCode=COST_TYPE</li> </ul>"
+          example: "TRANSPORT"
+        costTypeQualifier:
+          maxLength: 35
+          type: "string"
+          description: "Optional qualifier for cost type: <ul> <li>AIR_FREIGHT - Air\
+            \ freight costs</li> <li>INDIRECT_PAYMENT - Indirect payments</li> <li>'...\
+            \ for full list see /InternationalCustomsBFBean/getCodes with codeListCode=COST_TYPE_QUALIFIER</li>\
+            \ </ul>"
+          example: "INDIRECT_PAYMENT"
+        value:
+          $ref: "#/components/schemas/AmountOfMoneyDTO"
+        customsProcess:
+          maxLength: 20
+          type: "string"
+          description: "<p>Specific customs process. <ul><li>'EXPORT_BE' - Export\
+            \ process for Belgium</li> <li>'EXPORT_SE' - Export process for Sweden</li>\
+            \ <li>'EXPORT_NL' - Export process for Netherlands</li> <li>'TRANSIT_NL'\
+            \ - Transit process for Netherlands</li> <li>... for full list see /InternationalCustomsBFBean/getCodes\
+            \ with codeListCode=CUSTOMS_PROCESS_TYPE</li></ul></p>"
+          example: "EXPORT_BE"
+      description: "DTO to hold data for costs."
+    AmountOfMoneyDTO:
+      type: "object"
+      properties:
+        value:
+          type: "number"
+          description: "The value of the amount of money. <p>length=15, scale=2</p>"
+        currencyIso:
+          type: "string"
+          description: "The three letter ISO code of the currency of the amount of\
+            \ money. <p>length=3</p>"
+      description: "An amount of money with a value and an currency ISO code."
+    ICPersonDTO:
+      type: "object"
+      properties:
+        forename:
+          type: "string"
+          description: "Forename of the person in charge <p> length=20 </p>"
+        surname:
+          type: "string"
+          description: "Surname of the person in charge <p> length=30 </p>"
+        email:
+          type: "string"
+          description: "Email address of the person in charge <p> length=255 </p>"
+        phone:
+          type: "string"
+          description: "Phone number of the person in charge <p> length=20 </p>"
+        supplement:
+          type: "string"
+          description: "Phone number of the person in charge <p> length=10 </p>"
+        initials:
+          type: "string"
+          description: "Initials/login of the person in charge <p> length=20 </p>"
+        professionalTitle:
+          maxLength: 35
+          type: "string"
+          description: "Professional title of the person in charge"
+      description: "DTO to hold data of a person."
+    ICDeliveryDTO:
+      type: "object"
+      properties:
+        deliveryIdClientSystem:
+          type: "string"
+          description: "Unique id of the delivery within the ERP system <p> length=255\
+            \ </p>"
+        organizationUnitClientSystem:
+          type: "string"
+          description: "Additional criteria two separate different organisational\
+            \ units within one Engine's client. <p> length=255 </p>"
+        freeTemplateCriterion:
+          type: "string"
+          description: "Free textual criterion which can be referenced in template\
+            \ selectors.<p> length=50 </p>"
+        deliveryNumber:
+          type: "string"
+          description: "Reference number of the delivery. <p> length=70 </p>"
+        remark:
+          type: "string"
+          description: "Optional textual remark <p> length=1000 </p>"
+        totalGrossMass:
+          $ref: "#/components/schemas/QuantityDTO"
+        totalNetMass:
+          $ref: "#/components/schemas/QuantityDTO"
+        dispatchCountryCode:
+          type: "string"
+          description: "ISO code of the country from which the goods are originally\
+            \ dispatched/exported without any commercial transaction taken place in\
+            \ intermediate countries. <p> length=2 </p>"
+        destinationCountryCode:
+          type: "string"
+          description: "ISO code of the country at which the goods are destined <p>\
+            \ length=2 </p>"
+        decisiveDate:
+          $ref: "#/components/schemas/DateAndZoneDTO"
+        tradeTerms:
+          $ref: "#/components/schemas/ICTradeTermsDTO"
+        isContainerised:
+          type: "boolean"
+          description: "Flags, if the delivery is shipped in a container."
+        parties:
+          type: "array"
+          description: "List of parties, including their role within the consignment."
+          items:
+            $ref: "#/components/schemas/ICPartyDTO"
+        locations:
+          type: "array"
+          description: "List of locations, including their role within the consignment."
+          items:
+            $ref: "#/components/schemas/ICLocationDTO"
+        transportEquipments:
+          type: "array"
+          description: "List of transport equipments (e.g. containers)"
+          items:
+            $ref: "#/components/schemas/ICTransportEquipmentDTO"
+        customsOffices:
+          type: "array"
+          description: "List of customs offices."
+          items:
+            $ref: "#/components/schemas/ICCustomsOfficeDTO"
+        transportMeans:
+          type: "array"
+          description: "List of transport means."
+          items:
+            $ref: "#/components/schemas/ICTransportMeansDTO"
+        itinerary:
+          type: "array"
+          description: "List of countries of the itinerary."
+          items:
+            $ref: "#/components/schemas/ICRoutingCountryDTO"
+        invoices:
+          type: "array"
+          description: "List of invoices."
+          items:
+            $ref: "#/components/schemas/ICInvoiceDTO"
+        items:
+          type: "array"
+          description: "List of items."
+          items:
+            $ref: "#/components/schemas/ICDeliveryItemDTO"
+        packages:
+          type: "array"
+          description: "List of packages."
+          items:
+            $ref: "#/components/schemas/ICPackageDTO"
+        extension:
+          $ref: "#/components/schemas/ICDeliveryExtensionDataDTO"
+        goodsDescription:
+          type: "array"
+          description: "Description of goods in different languages. Each description\
+            \ can have a length of 280."
+          items:
+            $ref: "#/components/schemas/TextInLanguageDTO"
+        additionalReferences:
+          type: "array"
+          description: "List of additional references which belong to the delivery."
+          items:
+            $ref: "#/components/schemas/ICAdditionalReferenceDTO"
+      description: "DTO to hold data of a delivery."
+    ICPackageDTO:
+      type: "object"
+      properties:
+        packageIdClientSystem:
+          type: "string"
+          description: "ID of the package in the ERP system. <p> length=255 </p>"
+        quantity:
+          type: "integer"
+          description: "Number of packages <p> length=5 </p>"
+          format: "int32"
+        typeCode:
+          type: "string"
+          description: "Client specific package type. <p> length=10 </p>"
+        typeUneceCode:
+          type: "string"
+          description: "Common valid UN/ECE package type. <p> length=3 </p>"
+        grossMass:
+          $ref: "#/components/schemas/QuantityDTO"
+        netMass:
+          $ref: "#/components/schemas/QuantityDTO"
+        marks:
+          type: "string"
+          description: "Shipping marks - deprecated use  {@link #marksAndNumbers}\
+            \ instead<p> length=70 </p>"
+        marksAndNumbers:
+          $ref: "#/components/schemas/TextInLanguageDTO"
+        seals:
+          type: "array"
+          description: "List of seals which belong to the transport equipment."
+          items:
+            $ref: "#/components/schemas/ICSealDTO"
+        packedItems:
+          type: "array"
+          description: "Information about the items which are packed into this package."
+          items:
+            $ref: "#/components/schemas/ICPackedItemDTO"
+      description: "DTO to hold data of a package."
+    ICPackedItemDTO:
+      type: "object"
+      properties:
+        itemIdClientSystem:
+          type: "string"
+          description: "ID of the item in ERP system. <p> length=255 </p>"
+        packedQuantity:
+          type: "number"
+          description: "Quantity of the referenced item packed in the current package.\
+            \ The quantity unit is implied by the item's quantity unit. <p> length=11,3\
+            \ </p>"
+      description: "DTO to hold data of a packed item."
+    ICRoutingCountryDTO:
+      type: "object"
+      properties:
+        sequenceNumber:
+          type: "integer"
+          description: "Sequence number of the country within the itinerary. <p> length=2\
+            \ </p>"
+          format: "int32"
+        countryCode:
+          type: "string"
+          description: "ISO code of the country <p> length=2 </p>"
+      description: "DTO to hold data for a routing country."
+    ICTransportMeansDTO:
+      type: "object"
+      properties:
+        meansType:
+          type: "string"
+          description: "Specific means type: <ul> <li>BORDER - Transport means at\
+            \ border</li> <li>ARRIVAL - Transport means at arrival</li> <li>DEPARTURE\
+            \ - Transport means at departure</li> <li>'... for full list see /InternationalCustomsBFBean/getCodes\
+            \ with codeListCode=TRANSPORT_MEANS_TYPE</li> </ul> <p> length=35 </p>"
+        transportModeCode:
+          type: "string"
+          description: "Mode of transport. <p> length=2 </p>"
+        transportMeansCode:
+          type: "string"
+          description: "Type of transport means <p> length=2 </p>"
+        identification:
+          type: "string"
+          description: "Identifier to identify the means of transport. Sea: ITU Standard\
+            \ or Lloyd's number; Air: IATA aircraft ID; Road: national license plate;\
+            \ Rail: locomotive number <p> length=27 </p>"
+        nationalityCode:
+          type: "string"
+          description: "ISO code of the nationality of the means of transport. <p>\
+            \ length=2 </p>"
+      description: "DTO to hold data for transport means."
+    ICDeliveryExtensionDataDTO:
+      type: "object"
+      properties:
+        exportBroker:
+          $ref: "#/components/schemas/ICDeliveryBrokerDTO"
+        importBroker:
+          $ref: "#/components/schemas/ICDeliveryBrokerDTO"
+        exportGB:
+          $ref: "#/components/schemas/ICDeliveryEUDTO"
+        importGB:
+          $ref: "#/components/schemas/ICDeliveryEUDTO"
+        ensXI:
+          $ref: "#/components/schemas/ICDeliveryEUDTO"
+        ensGB:
+          $ref: "#/components/schemas/ICDeliveryEUDTO"
+        exportNL:
+          $ref: "#/components/schemas/ICDeliveryEUDTO"
+        importNL:
+          $ref: "#/components/schemas/ICDeliveryEUDTO"
+        exportBE:
+          $ref: "#/components/schemas/ICDeliveryEUDTO"
+        importBE:
+          $ref: "#/components/schemas/ICDeliveryEUDTO"
+        ensBE:
+          $ref: "#/components/schemas/ICDeliveryEUDTO"
+        exportAT:
+          $ref: "#/components/schemas/ICDeliveryEUDTO"
+        exportDK:
+          $ref: "#/components/schemas/ICDeliveryEUDTO"
+        exportFR:
+          $ref: "#/components/schemas/ICDeliveryEUDTO"
+        ensFR:
+          $ref: "#/components/schemas/ICDeliveryEUDTO"
+        exportPL:
+          $ref: "#/components/schemas/ICDeliveryEUDTO"
+        exportSE:
+          $ref: "#/components/schemas/ICDeliveryEUDTO"
+        exportDE:
+          $ref: "#/components/schemas/ICDeliveryExportDEDTO"
+        importDE:
+          $ref: "#/components/schemas/ICDeliveryImportDEDTO"
+        transitDE:
+          $ref: "#/components/schemas/ICDeliveryTransitDEDTO"
+        exportUS:
+          $ref: "#/components/schemas/ICDeliveryExportUSDTO"
+        gvmsGB:
+          $ref: "#/components/schemas/ICDeliveryGVMSGBDTO"
+        ensIE:
+          $ref: "#/components/schemas/ICDeliveryEUDTO"
+        summaryDeclarationDE:
+          $ref: "#/components/schemas/ICDeliverySummaryDeclarationDEDTO"
+      description: "DTO to hold delivery extension data for customs processes. Extension\
+        \ data is only required in some cases. Not all customs processes are supported."
+    ICDeliveryExportUSDTO:
+      type: "object"
+      properties:
+        carrierCode:
+          type: "string"
+          description: "Code specifying the carrier. <p> length=4 </p>"
+        consigneeRelatedIndicator:
+          type: "string"
+          description: "Code specifying the consignee related indicator. <p> length=3\
+            \ </p>"
+        consigneeType:
+          type: "string"
+          description: "Code specifying the consignee type. <p> length=2 </p>"
+        expectedDepartureTime:
+          $ref: "#/components/schemas/DateAndZoneDTO"
+        exportationPort:
+          type: "string"
+          description: "Code specifying the exportation port. <p> length=4 </p>"
+        unladingPort:
+          type: "string"
+          description: "Code specifying the unlading port. <p> length=5 </p>"
+        originRegion:
+          type: "string"
+          description: "Code specifying the origin region. <p> length=2 </p>"
+        soldEnRouteIndicator:
+          type: "string"
+          description: "Code specifying the sold en route indicator. <p> length=3\
+            \ </p>"
+        transportationReferenceNumber:
+          type: "string"
+          description: "Code specifying the transportation reference. <p> length=30\
+            \ </p>"
+      description: "DTO to hold Export US specific extension data for a ICDeliveryDTO."
+    ICDeliveryBrokerDTO:
+      type: "object"
+      properties:
+        extraFields:
+          type: "array"
+          description: "Extra fields for the delivery."
+          items:
+            $ref: "#/components/schemas/ICExtraFieldDTO"
+      description: "DTO to hold Broker extension data for a ICDeliveryDTO."
+    ICDeliveryExportDEDTO:
+      type: "object"
+      properties:
+        goodsLocation:
+          $ref: "#/components/schemas/ICLocationDTO"
+        expectedArrivalTime:
+          $ref: "#/components/schemas/DateAndZoneDTO"
+        expectedDepartureTime:
+          $ref: "#/components/schemas/DateAndZoneDTO"
+        templateName:
+          type: "string"
+          description: "Head template name in AES"
+        presentationOfGoodsStartDate:
+          $ref: "#/components/schemas/DateAndZoneDTO"
+        presentationOfGoodsEndDate:
+          $ref: "#/components/schemas/DateAndZoneDTO"
+      description: "DTO to hold Export DE specific extension data for a ICDeliveryDTO."
+    ICDeliveryEUDTO:
+      type: "object"
+      properties:
+        goodsLocation:
+          $ref: "#/components/schemas/ICLocationDTO"
+        expectedArrivalTime:
+          $ref: "#/components/schemas/DateAndZoneDTO"
+        expectedDepartureTime:
+          $ref: "#/components/schemas/DateAndZoneDTO"
+      description: "DTO to hold EU extension data for a ICDeliveryDTO."
+    ICDeliveryGVMSGBDTO:
+      type: "object"
+      properties:
+        isUnaccompanied:
+          type: "boolean"
+          description: "Indicates that the vehicle will not be accompanying the trailer(s)\
+            \ during the crossing. "
+        plannedCrossingRouteId:
+          type: "string"
+          description: "ID of the crossing route. <p>length=200</p>"
+        plannedCrossingDepartureDate:
+          $ref: "#/components/schemas/DateAndZoneDTO"
+      description: "GB specific extension data for a goods movement record."
+    ICDeliveryImportDEDTO:
+      type: "object"
+      properties:
+        producedDocuments:
+          type: "array"
+          description: "List of produced documents"
+          items:
+            $ref: "#/components/schemas/ICProducedDocumentEUDTO"
+        sumDecWriteOffInfo:
+          type: "array"
+          description: "List of write off data for summary declaration assignment"
+          items:
+            $ref: "#/components/schemas/ICDeliverySumDecWriteOffInfoDEDTO"
+        destinationCountryRegionCode:
+          maxLength: 2
+          type: "string"
+          description: "Country region code of destination (ATLAS code list A1270)"
+        departureAirport:
+          pattern: "^[A-Z]{3}$"
+          type: "string"
+          description: "Code (IATA key) for the airport of departure"
+        proportionateAirFreightInEU:
+          $ref: "#/components/schemas/AmountOfMoneyDTO"
+        proportionateAirFreightOutEU:
+          $ref: "#/components/schemas/AmountOfMoneyDTO"
+        discount:
+          $ref: "#/components/schemas/AmountOfMoneyDTO"
+        discountPercent:
+          type: "number"
+          description: "Discount in percent (cost distribution)"
+        cashDiscount:
+          $ref: "#/components/schemas/AmountOfMoneyDTO"
+        cashDiscountPercent:
+          type: "number"
+          description: "Cash discount in percent (cost distribution)"
+        promilleInsurance:
+          type: "number"
+          description: "Permill rate of the insurance premium for the transport insurance\
+            \ in relation to the invoice value (cost distribution)"
+      description: "DTO to hold Import DE specific extension data for a ICDeliveryDTO."
+    ICProducedDocumentEUDTO:
+      type: "object"
+      properties:
+        typeCode:
+          type: "string"
+          description: "Code specifying the name of a document. Qualifier has to be\
+            \ separated with a \"/\". <p> length=9 </p>"
+        reference:
+          type: "string"
+          description: "Free text field for a document reference. <p> length=35 </p>"
+        informationDate:
+          $ref: "#/components/schemas/DateAndZoneDTO"
+        expiryDate:
+          $ref: "#/components/schemas/DateAndZoneDTO"
+        quantity:
+          $ref: "#/components/schemas/QuantityDTO"
+        amount:
+          $ref: "#/components/schemas/AmountOfMoneyDTO"
+        complementaryInfo:
+          type: "string"
+          description: "Additional free text field. <p> length=35 </p>"
+        statusCode:
+          type: "string"
+          description: "Code specifying the status of a document. <p> length=2 </p>"
+        documentPart:
+          type: "string"
+          description: "Identifies a part of a document (e.g. a licence line).  <p>\
+            \ length=5 </p>"
+        detail:
+          type: "string"
+          description: "Provides detailed information on the document.  <p> length=12\
+            \ </p>"
+        atHand:
+          type: "boolean"
+          description: "Provides detailed information on the document. "
+        procedureSpecificDocumentCode:
+          type: "string"
+          description: "Different coding for the document required for reporting to\
+            \ customs.  <p> length=12 </p>"
+      description: "DTO to hold data for EU produced documents."
+    ICDeliveryItemBrokerDTO:
+      type: "object"
+      properties:
+        producedDocuments:
+          type: "array"
+          description: "List of produced documents"
+          items:
+            $ref: "#/components/schemas/ICProducedDocumentBrokerDTO"
+        extraFields:
+          type: "array"
+          description: "Extra fields for the delivery item."
+          items:
+            $ref: "#/components/schemas/ICExtraFieldDTO"
+      description: "DTO to hold Broker specific extension data for a ICDeliveryItemDTO}."
+    ICProducedDocumentBrokerDTO:
+      type: "object"
+      properties:
+        typeCode:
+          type: "string"
+          description: "Code specifying the name of a document. Qualifier has to be\
+            \ separated with a \"/\". <p> length=9 </p>"
+        reference:
+          type: "string"
+          description: "Free text field for a document reference. <p> length=35 </p>"
+        informationDate:
+          $ref: "#/components/schemas/DateAndZoneDTO"
+      description: "DTO to hold data for produced documents."
+    ICDeliveryItemDTO:
+      type: "object"
+      properties:
+        itemIdClientSystem:
+          type: "string"
+          description: "ID of the item in ERP system. <p> length=255 </p>"
+        itemNumber:
+          type: "string"
+          description: "No. of item <p> length=20 </p>"
+        materialNumber:
+          type: "string"
+          description: "Typically for internal use and not needed for customs declaration.\
+            \ <p> length=50 </p>"
+        invoiceIdClientSystem:
+          type: "string"
+          description: "References to the invoice for further processing <p> length=255\
+            \ </p>"
+        grossMass:
+          $ref: "#/components/schemas/QuantityDTO"
+        netMass:
+          $ref: "#/components/schemas/QuantityDTO"
+        netPrice:
+          $ref: "#/components/schemas/AmountOfMoneyDTO"
+        originCountryCode:
+          type: "string"
+          description: "ISO code of country where the goods of this item originate\
+            \ from. <p> length=2 </p>"
+        preferentialOriginCountryCode:
+          type: "string"
+          description: "ISO code of the preferential origin country. <p> length=2\
+            \ </p>"
+        dispatchCountryCode:
+          type: "string"
+          description: "ISO code of the country from which the goods are originally\
+            \ dispatched/exported without any commercial transaction taken place in\
+            \ intermediate countries. <p> length=2 </p>"
+        destinationCountryCode:
+          type: "string"
+          description: "ISO code of the country at which the goods are destined <p>\
+            \ length=2 </p>"
+        isEligiblePreference:
+          type: "boolean"
+          description: "Indicates if the item is eligible for preference"
+        statisticalValue:
+          $ref: "#/components/schemas/AmountOfMoneyDTO"
+        additionalAggregationKey:
+          type: "string"
+          description: "Additional aggregation key considered during transmutation\
+            \ <p> length=100 </p>"
+        additionalSplitCriteria:
+          type: "string"
+          description: "Additional split criteria considered during transmutation\
+            \ <p> length=100 </p>"
+        extension:
+          $ref: "#/components/schemas/ICDeliveryItemExtensionDataDTO"
+        classifications:
+          type: "array"
+          description: "List of classifications (e.g. commodity codes)"
+          items:
+            $ref: "#/components/schemas/ICClassificationDTO"
+        goodsDescription:
+          type: "array"
+          description: "Description of goods in different languages (if available)"
+          items:
+            $ref: "#/components/schemas/TextInLanguageDTO"
+        parties:
+          type: "array"
+          description: "List of parties, including their role within the consignment."
+          items:
+            $ref: "#/components/schemas/ICPartyDTO"
+        costs:
+          type: "array"
+          description: "A list of costs like freight cost, insurance or additonal\
+            \ cost for the delivery item"
+          items:
+            $ref: "#/components/schemas/ICCostDTO"
+        quantities:
+          type: "array"
+          description: "A list of quantities, like item quantity, statisticalquantity..."
+          items:
+            $ref: "#/components/schemas/ICQuantityDTO"
+        additionalReferences:
+          type: "array"
+          description: "List of additional references which belong to the delivery."
+          items:
+            $ref: "#/components/schemas/ICAdditionalReferenceDTO"
+        customsProcedures:
+          type: "array"
+          description: "List of customs procedure codes."
+          items:
+            $ref: "#/components/schemas/ICCustomsProcedureDTO"
+        locations:
+          type: "array"
+          description: "List of locations, including their role within the consignment."
+          items:
+            $ref: "#/components/schemas/ICLocationDTO"
+        freeTemplateCriterion:
+          type: "string"
+          description: "Free textual criterion which can be referenced in template\
+            \ selectors.<p> length=50 </p>"
+      description: "DTO to hold data of a delivery item."
+    ICCustomsProcedureDTO:
+      type: "object"
+      properties:
+        customsProcedureType:
+          type: "string"
+          description: "Specific types are: <ul> <li>EXPORTPROC - Customs procedure\
+            \ code export</li> <li>EXPORTPROCNAT - Customs national procedure code\
+            \ export</li> <li>EXPORTCPCGRP - Customs procedure code category/group\
+            \ export</li> <li>IMPORTPROC - Customs procedure code import</li> <li>IMPORTPROCNAT\
+            \ - Customs national procedure code import</li> <li>IMPORTCPCGRP - Customs\
+            \ procedure code category/group import</li>\t *  <li>'... for full list\
+            \ see /InternationalCustomsBFBean/getCodes with codeListCode=CUSTOMS_PROCEDURE_TYPE</li>\
+            \ </ul> <p> length=35 </p>"
+        customsProcedureCode:
+          type: "string"
+          description: "The code depending on the type above. <p> length=20 </p>"
+      description: "DTO to hold data for customs procedure codes"
+    ICQuantityDTO:
+      type: "object"
+      properties:
+        quantityType:
+          type: "string"
+          description: "Specific quantity type: <ul> <li>ITEM - Item quantity</li>\
+            \ <li>CUSTOMS - Customs quantity</li> <li>EXCISE - Excise quantity</li>\
+            \ <li>STATISTICAL - Statistical quantity</li> <li>'... for full list see\
+            \ /InternationalCustomsBFBean/getCodes with codeListCode=QUANTITY_TYPE</li>\
+            \ </ul> <p> length=10 </p>"
+        quantity:
+          $ref: "#/components/schemas/QuantityDTO"
+      description: "DTO to hold data for quantity."
+    ICClassificationDTO:
+      type: "object"
+      properties:
+        classificationType:
+          type: "string"
+          description: "Specific classification type: <ul> <li>COCOEXPORT - Commodity\
+            \ code export</li> <li>COCOIMPORT - Commodity code import</li> <li>UNDG\
+            \ - UNDG number</li> <li>ADDCODE1 - Additional code 1 of the commodity\
+            \ code</li> <li>ADDCODE2 - Additional code 2 of the commodity code</li>\
+            \ <li>'... for full list see /InternationalCustomsBFBean/getCodes with\
+            \ codeListCode=COMMODITY_CLASSIFICATION_TYPE</li> </ul> <p> length=35\
+            \ </p>"
+        classificationValue:
+          type: "string"
+          description: "E.g. the commodity code, depends on the type above. <p> length=35\
+            \ </p>"
+        customsProcess:
+          maxLength: 20
+          type: "string"
+          description: "<p>Specific customs process. <ul><li>'EXPORT_BE' - Export\
+            \ process for Belgium</li> <li>'EXPORT_SE' - Export process for Sweden</li>\
+            \ <li>'EXPORT_NL' - Export process for Netherlands</li> <li>'TRANSIT_NL'\
+            \ - Transit process for Netherlands</li> <li>... for full list see /InternationalCustomsBFBean/getCodes\
+            \ with codeListCode=CUSTOMS_PROCESS_TYPE</li></ul></p>"
+          example: "EXPORT_BE"
+      description: "DTO to hold data for classification."
+    ICDeliveryItemEUDTO:
+      type: "object"
+      properties:
+        transactionNatureCode:
+          type: "string"
+          description: "Code specifying the nature of transaction. <p> length=2 </p>"
+        producedDocuments:
+          type: "array"
+          description: "List of produced documents"
+          items:
+            $ref: "#/components/schemas/ICProducedDocumentEUDTO"
+        previousDocuments:
+          type: "array"
+          description: "List of previous documents"
+          items:
+            $ref: "#/components/schemas/ICPreviousDocumentDTO"
+        preferentialData:
+          $ref: "#/components/schemas/ICPreferentialDataEUDTO"
+        originCountryRegionCode:
+          type: "string"
+          description: "ISO code of country region where the goods of this item originate\
+            \ from. <p> length=4 </p>"
+      description: "DTO to hold EU specific extension data for a ICDeliveryItemDTO."
+    ICPreferentialDataEUDTO:
+      type: "object"
+      properties:
+        preferenceType:
+          type: "string"
+          description: "Preferential request code. <p> length=3 </p>"
+      description: "DTO to hold data for preferential request (EU)."
+    ICPreviousDocumentDTO:
+      type: "object"
+      properties:
+        type:
+          maxLength: 6
+          type: "string"
+          description: "Code specifying the type of a previous document."
+        reference:
+          maxLength: 35
+          type: "string"
+          description: "Free text field for a document reference."
+        complementaryInfo:
+          maxLength: 70
+          type: "string"
+          description: "Additional free text field."
+      description: "DTO to hold data for previous documents."
+    ICDeliveryItemExportDEDTO:
+      type: "object"
+      properties:
+        transactionNatureCode:
+          type: "string"
+          description: "Code specifying the nature of transaction. <p> length=2 </p>"
+        producedDocuments:
+          type: "array"
+          description: "List of produced documents"
+          items:
+            $ref: "#/components/schemas/ICProducedDocumentEUDTO"
+        previousDocuments:
+          type: "array"
+          description: "List of previous documents"
+          items:
+            $ref: "#/components/schemas/ICPreviousDocumentDTO"
+        preferentialData:
+          $ref: "#/components/schemas/ICPreferentialDataEUDTO"
+        originCountryRegionCode:
+          type: "string"
+          description: "ISO code of country region where the goods of this item originate\
+            \ from. <p> length=4 </p>"
+        templateName:
+          type: "string"
+          description: "Item template name in AES"
+      description: "DTO to hold Export DE specific extension data for a ICDeliveryItemDTO."
+    ICDeliveryItemExportUSDTO:
+      type: "object"
+      properties:
+        licenseQualifier:
+          type: "string"
+          description: "Code specifying the license qualificator. <p> length=1 </p>"
+        licenseType:
+          type: "string"
+          description: "Code specifying the license type. <p> length=3 </p>"
+        licenseNumber:
+          type: "string"
+          description: "String representing the license number. <p> length=35 </p>"
+        licenseSymbol:
+          type: "string"
+          description: "Code specifying the license symbol. <p> length=2 </p>"
+        ddtcRegistration:
+          type: "string"
+          description: "String representing the DDTC registration number. <p> length=35\
+            \ </p>"
+      description: "DTO to hold US specific extension data for a ICDeliveryItemDTO."
+    ICDeliveryItemExtensionDataDTO:
+      type: "object"
+      properties:
+        exportAT:
+          $ref: "#/components/schemas/ICDeliveryItemEUDTO"
+        exportBE:
+          $ref: "#/components/schemas/ICDeliveryItemEUDTO"
+        importBE:
+          $ref: "#/components/schemas/ICDeliveryItemEUDTO"
+        ensBE:
+          $ref: "#/components/schemas/ICDeliveryItemEUDTO"
+        exportDK:
+          $ref: "#/components/schemas/ICDeliveryItemEUDTO"
+        exportFR:
+          $ref: "#/components/schemas/ICDeliveryItemEUDTO"
+        ensFR:
+          $ref: "#/components/schemas/ICDeliveryItemEUDTO"
+        ensXI:
+          $ref: "#/components/schemas/ICDeliveryItemEUDTO"
+        ensGB:
+          $ref: "#/components/schemas/ICDeliveryItemEUDTO"
+        exportGB:
+          $ref: "#/components/schemas/ICDeliveryItemEUDTO"
+        importGB:
+          $ref: "#/components/schemas/ICDeliveryItemEUDTO"
+        exportNL:
+          $ref: "#/components/schemas/ICDeliveryItemEUDTO"
+        importNL:
+          $ref: "#/components/schemas/ICDeliveryItemEUDTO"
+        exportPL:
+          $ref: "#/components/schemas/ICDeliveryItemEUDTO"
+        exportSE:
+          $ref: "#/components/schemas/ICDeliveryItemEUDTO"
+        exportBroker:
+          $ref: "#/components/schemas/ICDeliveryItemBrokerDTO"
+        importBroker:
+          $ref: "#/components/schemas/ICDeliveryItemBrokerDTO"
+        exportDE:
+          $ref: "#/components/schemas/ICDeliveryItemExportDEDTO"
+        importDE:
+          $ref: "#/components/schemas/ICDeliveryItemImportDEDTO"
+        transitDE:
+          $ref: "#/components/schemas/ICDeliveryItemTransitDEDTO"
+        exportUS:
+          $ref: "#/components/schemas/ICDeliveryItemExportUSDTO"
+        ensIE:
+          $ref: "#/components/schemas/ICDeliveryItemEUDTO"
+      description: "DTO to hold delivery item extension data for customs processes.\
+        \ Extension data is only required in very rare cases. Not all customs processes\
+        \ are supported."
+    ICDeliveryItemImportDEDTO:
+      type: "object"
+      properties:
+        transactionNatureCode:
+          type: "string"
+          description: "Code specifying the nature of transaction. <p> length=2 </p>"
+        producedDocuments:
+          type: "array"
+          description: "List of produced documents"
+          items:
+            $ref: "#/components/schemas/ICProducedDocumentEUDTO"
+        previousDocuments:
+          type: "array"
+          description: "List of previous documents"
+          items:
+            $ref: "#/components/schemas/ICPreviousDocumentDTO"
+        preferentialData:
+          $ref: "#/components/schemas/ICPreferentialDataEUDTO"
+        originCountryRegionCode:
+          type: "string"
+          description: "ISO code of country region where the goods of this item originate\
+            \ from. <p> length=4 </p>"
+        articlePrice:
+          $ref: "#/components/schemas/AmountOfMoneyDTO"
+        tobaccoRevenueStampNumber:
+          type: "string"
+          description: "Tobacco revenue stamp number"
+        departureAirport:
+          pattern: "^[A-Z]{3}$"
+          type: "string"
+          description: "Code (IATA key) for the airport of departure"
+        proportionateAirFreightInEU:
+          $ref: "#/components/schemas/AmountOfMoneyDTO"
+        proportionateAirFreightOutEU:
+          $ref: "#/components/schemas/AmountOfMoneyDTO"
+      description: "DTO to hold Import DE specific extension data for a ICDeliveryItemDTO."
+    ICDeliveryItemTransitDEDTO:
+      type: "object"
+      properties:
+        producedDocuments:
+          type: "array"
+          description: "List of produced documents"
+          items:
+            $ref: "#/components/schemas/ICProducedDocumentEUDTO"
+      description: "DTO to hold Transit DE specific extension data for a ICDeliveryItemDTO."
+    ICDeliverySumDecWriteOffInfoDEDTO:
+      type: "object"
+      properties:
+        assignmentCriteria:
+          type: "string"
+          description: "The assignment criteria for the summary declaration items."
+        numberOfPackages:
+          type: "integer"
+          description: "Number of packages to be written off."
+          format: "int32"
+      description: "DTO to hold the write off data for summary declaration assignment."
+    ICDeliverySummaryDeclarationDEDTO:
+      type: "object"
+      properties:
+        previousDocument:
+          $ref: "#/components/schemas/ICPreviousDocumentDTO"
+        arrivalDate:
+          $ref: "#/components/schemas/DateAndZoneDTO"
+        presentationDate:
+          $ref: "#/components/schemas/DateAndZoneDTO"
+        containerQuantity:
+          type: "integer"
+          description: "Amount of containers"
+          format: "int32"
+      description: "DTO to hold Summary Declaration DE specific extension data for\
+        \ a ICDeliveryDTO."
+    ICDeliveryTransitDEDTO:
+      type: "object"
+      properties:
+        simplifiedProcedureFlag:
+          type: "boolean"
+          description: "Head template name"
+      description: "DTO to hold Import DE specific extension data for a ICDeliveryDTO."
+    ICExtraFieldDTO:
+      type: "object"
+      properties:
+        identCode:
+          type: "string"
+          description: "Code of the extra field. <p> length=50 </p>"
+        value:
+          type: "string"
+          description: "Value of the extra field. <p> length=1000 </p>"
+      description: "Represents an extra field (or additional field). Extra fields\
+        \ must be configured in ICI and linked to the customs process."
+    ICInvoiceDTO:
+      type: "object"
+      properties:
+        invoiceIdClientSystem:
+          type: "string"
+          description: "Unique id of the invoice within the ERP system <p> length=255\
+            \ </p>"
+        invoiceNumber:
+          type: "string"
+          description: "Reference number of the invoice. <p> length=70 </p>"
+        invoiceDate:
+          $ref: "#/components/schemas/DateAndZoneDTO"
+        invoicePrice:
+          $ref: "#/components/schemas/AmountOfMoneyDTO"
+        invoicePriceRate:
+          $ref: "#/components/schemas/ICCurrencyRateDTO"
+      description: "DTO to hold data of an invoice."
+    ICCurrencyRateDTO:
+      type: "object"
+      properties:
+        rate:
+          type: "number"
+          description: "Rate value. <p> length=18, 6 </p>"
+        rateDate:
+          $ref: "#/components/schemas/DateAndZoneDTO"
+      description: "DTO to hold data of currency rate."
+    ICAdditionalReferenceDTO:
+      type: "object"
+      properties:
+        referenceType:
+          type: "string"
+          description: "Specific type of the reference: <ul> <li>PORT_BOOKING_NUMBER\
+            \ - Booking reference of a port notification</li> <li>EXPORT_REG_NUMBER\
+            \ - Registration number of a export declaration</li> <li>IMPORT_REG_NUMBER\
+            \ - Registration number of a import declaration</li> <li>TRANSIT_REG_NUMBER\
+            \ - Registration number of a transit declaration</li> <li>EMCS_ARC_NUMBER\
+            \ - Administrative reference code .</li> <li>'... for full list see /InternationalCustomsBFBean/getCodes\
+            \ with codeListCode=REFERENCE_TYPE </li>  </ul> <p> length=20 </p>"
+        reference:
+          type: "string"
+          description: "The reference number. <p> length=50 </p>"
+        issueDate:
+          $ref: "#/components/schemas/DateAndZoneDTO"
+        itemNumber:
+          type: "integer"
+          description: "Item number of the referenced declaration or business object."
+          format: "int32"
+      description: "DTO to hold data of a additional reference."
+    ICCustomsOfficeDTO:
+      type: "object"
+      properties:
+        officeType:
+          type: "string"
+          description: "Specific office type: <ul> <li>ENTRY - Entry office</li> <li>EXIT\
+            \ - Exit office</li> <li>EXPORT - Export office</li> <li>TRANSIT - Transit\
+            \ office</li> <li>'... for full list see /InternationalCustomsBFBean/getCodes\
+            \ with codeListCode=CUSTOMS_OFFICE_TYPE</li> </ul> <p> length=35 </p>"
+        sequenceNumber:
+          type: "integer"
+          description: "Sequence number of the customs office within the itinerary.\
+            \ <p> length=2 </p>"
+          format: "int32"
+        officeCode:
+          type: "string"
+          description: "Code of the customs office. <p> length=30 </p>"
+      description: "DTO to hold data for a customs office."
+    ICTransportEquipmentDTO:
+      type: "object"
+      properties:
+        equipmentType:
+          type: "string"
+          description: "Specific equimpment type. <ul> <li>'CONTAINER' - Container\
+            \ number</li> <li>'TRAILER' - Trailer ID</li> </ul> <p> length=35 </p>"
+        identification:
+          type: "string"
+          description: "The equipment identification number, e.g. container number\
+            \ or trailer id. <p> length=17 </p>"
+        seals:
+          type: "array"
+          description: "List of seals which belong to the transport equipment."
+          items:
+            $ref: "#/components/schemas/ICSealDTO"
+      description: "DTO to hold data of transport equipment."
+    ICSealDTO:
+      type: "object"
+      properties:
+        identification:
+          type: "string"
+          description: "The seals number. <p> length=35 </p>"
+      description: "DTO to hold data for a seal."
+    ICLocationDTO:
+      type: "object"
+      properties:
+        locationType:
+          type: "string"
+          description: "Specific location type: <ul> <li>LOADING_PLACE - Place of\
+            \ loading</li> <li>UNLOADING_PLACE - Place of unloading</li> <li>'...\
+            \ for full list see /InternationalCustomsBFBean/getCodes with codeListCode=LOCATION_TYPE</li>\
+            \ </ul> <p> length=35 </p>"
+        code:
+          type: "string"
+          description: "Location code <p> length=35 </p>"
+        name:
+          type: "string"
+          description: "Location name <p> length=35 </p>"
+        street:
+          type: "string"
+          description: "Street.  <p> length=70 </p> <p> For NL used as optional Address,\
+            \ length=22 </p>"
+        streetNumber:
+          type: "string"
+          description: "Street number <p> length=10 </p>"
+        city:
+          type: "string"
+          description: "City <p> length=35 </p>"
+        postCode:
+          type: "string"
+          description: "Postal code <p> length=7 </p>"
+        country:
+          type: "string"
+          description: "Country Iso code <p> length=2 </p>"
+        complement:
+          type: "string"
+          description: "Complementing data <p> length=4 </p>"
+        customsProcess:
+          maxLength: 20
+          type: "string"
+          description: "<p>Specific customs process. <ul><li>'EXPORT_BE' - Export\
+            \ process for Belgium</li> <li>'EXPORT_SE' - Export process for Sweden</li>\
+            \ <li>'EXPORT_NL' - Export process for Netherlands</li> <li>'TRANSIT_NL'\
+            \ - Transit process for Netherlands</li> <li>... for full list see /InternationalCustomsBFBean/getCodes\
+            \ with codeListCode=CUSTOMS_PROCESS_TYPE</li></ul></p>"
+          example: "EXPORT_BE"
+      description: "DTO to hold data of a location."
+    ICPartyDTO:
+      type: "object"
+      properties:
+        partyType:
+          maxLength: 35
+          type: "string"
+          description: "Specific party type. <ul> <li>'DECLARANT' for Declarant of\
+            \ the declaration</li> <li>'EXPORTER' for Export of goods</li> <li>'AGENT'\
+            \ for Agent or representative</li> <li>'... for full list see /InternationalCustomsBFBean/getCodes\
+            \ with codeListCode=PARTY_TYPE </li> </ul>"
+          example: "DECLARANT"
+        customsProcess:
+          maxLength: 20
+          type: "string"
+          description: "<p>Specific customs process. <ul><li>'EXPORT_BE' - Export\
+            \ process for Belgium</li> <li>'EXPORT_SE' - Export process for Sweden</li>\
+            \ <li>'EXPORT_NL' - Export process for Netherlands</li> <li>'TRANSIT_NL'\
+            \ - Transit process for Netherlands</li> <li>... for full list see /InternationalCustomsBFBean/getCodes\
+            \ with codeListCode=CUSTOMS_PROCESS_TYPE</li></ul></p>"
+          example: "EXPORT_BE"
+        companyNumber:
+          type: "string"
+          description: "Internal ID which identifies a stored address. This could\
+            \ be an adress in the ICI master data entry or could be used in a partner\
+            \ system. Check special documentation about the use of this field in concrete\
+            \ contexts. <p> length=20 </p>"
+        name:
+          maxLength: 120
+          type: "string"
+          description: "Company name"
+        name2:
+          maxLength: 120
+          type: "string"
+          description: "Additional company name"
+        street:
+          maxLength: 70
+          type: "string"
+          description: "Street with number."
+        street2:
+          maxLength: 70
+          type: "string"
+          description: "Additional street."
+        city:
+          maxLength: 35
+          type: "string"
+          description: "City"
+        postCode:
+          maxLength: 9
+          type: "string"
+          description: "Postal code"
+        district:
+          maxLength: 35
+          type: "string"
+          description: "District within the city."
+        country:
+          maxLength: 2
+          type: "string"
+          description: "Country Iso code"
+        countryRegionCode:
+          maxLength: 5
+          type: "string"
+          description: "Code of the region/state within the country."
+        contact:
+          $ref: "#/components/schemas/ICPersonDTO"
+        initFromCompanyMasterFileData:
+          type: "boolean"
+          description: "If true company data is taken from the company master data\
+            \ and overwrites the given DTO fields. A company is identified by the\
+            \  {@link #companyNumber}. If not filled the field  {@link #name} is taken.\
+            \ For reasons of uniqueness it isrecommended to fill the field  {@link\
+            \ #companyNumber}."
+        customsIds:
+          type: "array"
+          description: "List of customs ids."
+          items:
+            $ref: "#/components/schemas/ICCustomsIdentifcationDTO"
+      description: "DTO to hold data of a party."
+    ICCustomsIdentifcationDTO:
+      type: "object"
+      properties:
+        identificationType:
+          type: "string"
+          description: "Specific identification type: <ul> <li>EORI - EORI number</li>\
+            \ <li>VAT - VAT number</li> <li>BRANCH - BRANCH number</li> <li>'... for\
+            \ full list see /InternationalCustomsBFBean/getCodes with codeListCode=CUSTOMS_IDENTIFICATION_TYPE</li>\
+            \ </ul> <p> length=35 </p>"
+        identification:
+          type: "string"
+          description: "Customs id number. <p> length=20 </p>"
+      description: "DTO to hold data for customs identification."
+    ICTradeTermsDTO:
+      type: "object"
+      properties:
+        incotermCode:
+          type: "string"
+          description: "Code specifying the delivery or transport terms. See EDIFACT\
+            \ codes. <p> length=3 </p>"
+        place:
+          type: "string"
+          description: "Name of the point or port of departure, shipment or destination,\
+            \ as required under the applicable terms of delivery, e.g. Incoterm. <p>\
+            \ length=256 </p>"
+        info:
+          type: "string"
+          description: "Additional infom e.g. for type 'XXX'. <p> length=100 </p>"
+      description: "DTO to hold data of trade terms."
+    QuantityDTO:
+      type: "object"
+      properties:
+        value:
+          type: "number"
+          description: "The value of the quantity. <p>length=15, scale=3</p>"
+        unit:
+          type: "string"
+          description: "Identifier of the quantity unit (must be unique). E.g. St\
+            \ / h / kg for pieces / hours / kilograms.<p>length=10</p>"
+      description: "A quantity with a value and a quantity unit.<br>The quantity unit\
+        \ type is specified by the usage context, i.e. if this quantity is a weight,\
+        \ a volume or similar.<br>Quantity units are encoded mainly by using SI unit\
+        \ codes (International System of Units).The weight unit 'Gram' is encoded\
+        \ by ident code 'gr'.The weight unit 'Piece' (meaning pieces of some material\
+        \ or units of some service) is encoded by ident code 'St'.Recoding from capital\
+        \ letters to small letters (e.g. from 'LB' to 'lb') may be supported, depending\
+        \ on the product engine."
+    ResponseMessageDTO:
+      type: "object"
+      properties:
+        messageType:
+          type: "string"
+          description: "<p>Message type</p><p>If not stated otherwise, the possible\
+            \ types are:</p><ul><li>ERROR</li><li>WARNING</li><li>INFO</li></ul><p>Maximum\
+            \ length: 50</p>"
+          example: "WARNING"
+        messageIdentCode:
+          type: "string"
+          description: "<p>Optional identification code for further classification\
+            \ of the message type.</p><p>Maximum length: 50</p>"
+          example: "5627"
+        messageTexts:
+          type: "array"
+          description: "<p>Detailed message texts in the requested languages.</p>"
+          items:
+            $ref: "#/components/schemas/TextInLanguageDTO"
+        indentationLevel:
+          type: "integer"
+          description: "<p>The indentation level of the message.</p><p>'0' indicates\
+            \ a top level message.</p>"
+          format: "int32"
+          example: 0
+      description: "Result messages like errors or warnings."
+    TextInLanguageDTO:
+      type: "object"
+      properties:
+        languageISOCode:
+          type: "string"
+          description: "<p>2-letter ISO code of the language.</p><p>length=2</p>"
+          example: "en"
+        text:
+          type: "string"
+          description: "The translated text."
+          example: "Some free-form text"
+      description: "A translated text in one of the specified languages."
+    error:
+      description: "an individual error item, that can be listed"
+      type: "object"
+      properties:
+        code:
+          type: "string"
+          default: ""
+          description: "The errorcode"
+        detail:
+          type: "string"
+          default: ""
+          description: "the description of the error"
+    errorResponseBody:
+      description: "Response object containing errors"
+      type: "object"
+      properties:
+        errors:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/error"
+  securitySchemes:
+    OauthQAS:
+      description: "The shop-returns API uses OAuth 2 with the client credentials\
+        \ flow. Use your apps credentials to receive the token."
+      type: "oauth2"
+      flows:
+        clientCredentials:
+          tokenUrl: "https://api-qas.gls-group.net/oauth2/v1/token"
+security:
+- OauthSandbox: []
+- OauthQAS: []

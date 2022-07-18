@@ -1,0 +1,30 @@
+{
+    "$schema": "http://json-schema.org/draft/2020-12/schema",
+    "$id": "https://company.com/orders.schema.json",
+    "title": "Orders",
+    "description": "Eine Auflistung bestellter Produkte.",
+    "type": "object",
+    "properties": {
+        "data": {
+            "description": "Eine Liste der Bestellungen.",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "description": "Eine Bestellung mit Informationen über den Artikel und die Anzahl.",
+                "properties": {
+                    "ID": {
+                        "type": "integer"
+                    },
+                    "Artikel": {
+                        "type": "string"
+                    },
+                    "Anzahl": {
+                        "type": "integer"
+                    }
+                
+                },
+                "required": ["ID", "Artikel", "Anzahl"]
+            }
+        } 
+    }
+}

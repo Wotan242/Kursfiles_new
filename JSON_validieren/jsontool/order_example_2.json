@@ -1,0 +1,25 @@
+{
+    "data": [
+        
+            "ID": 1,
+            "Artikel": "Hammer",
+            "Anzahl": 5,
+	    "Name": "Hallo"
+        },
+        {
+            "ID": 3,
+            "Artikel": "Zange",
+            "Anzahl": 2
+        },
+        {
+            "ID": 7,
+            "Artikel": "Nagel"
+            
+        },
+        {
+            "ID": 8,
+            "Artikel": "Bohrer",
+            "Anzahl": 4
+        }
+    ]
+}
